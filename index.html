@@ -30,9 +30,53 @@
       line-height: 1.7;
     }
     body.fr { font-family: 'Poppins', sans-serif; }
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: var(--white);
+      border-bottom: 3px solid var(--red);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-brand img { height: 48px; width: 48px; object-fit: contain; border-radius: 50%; }
+    .nav-brand span { font-size: 1.1rem; font-weight: 700; color: var(--blue-dark); }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.95rem;
+      padding: 0.25rem 0; border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-links a:hover { color: var(--blue); border-color: var(--blue); }
+    .lang-btn {
+      background: var(--blue); color: var(--white);
+      border: none; border-radius: 20px;
+      padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      font-family: inherit;
+    }
+    .lang-btn:hover { background: var(--blue-dark); }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      nav { padding: 0.6rem 1rem; }
+    }
   </style>
 </head>
 <body>
+  <nav>
+    <div class="nav-brand">
+      <img src="assets/logo.png" alt="بصمة الأمل" onerror="this.style.display='none'" />
+      <span data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home" data-ar="الرئيسية" data-fr="Accueil">الرئيسية</a></li>
+      <li><a href="#about" data-ar="من نحن" data-fr="À propos">من نحن</a></li>
+      <li><a href="#donate" data-ar="تبرع" data-fr="Faire un don">تبرع</a></li>
+      <li><a href="#contact" data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</a></li>
+    </ul>
+    <button class="lang-btn" onclick="toggleLang()">FR</button>
+  </nav>
   <!-- sections go here -->
   <script>
     // JS goes here
