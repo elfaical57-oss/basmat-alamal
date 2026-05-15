@@ -350,18 +350,35 @@
     <div style="margin-top:0.75rem; opacity:0.5; font-size:0.8rem;">© 2026</div>
   </footer>
   <script>
-    function copyRIB() {
-      const rib = document.querySelector('.rib-number').textContent;
-      navigator.clipboard.writeText(rib).then(() => {
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = btn.getAttribute('data-ar') === btn.textContent ? 'تم النسخ!' : 'Copié!';
-        setTimeout(() => {
-          btn.textContent = originalText;
-        }, 2000);
-      });
-    }
-    // JS goes here
+let currentLang = 'ar';
+
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'fr' : 'ar';
+  applyLang(currentLang);
+}
+
+function applyLang(lang) {
+  const html = document.documentElement;
+  html.setAttribute('lang', lang);
+  html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.body.classList.toggle('fr', lang === 'fr');
+
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+
+  document.querySelector('.lang-btn').textContent = lang === 'ar' ? 'FR' : 'AR';
+}
+
+function copyRIB() {
+  const rib = '011.640.0000.09.200.00.13473.55';
+  navigator.clipboard.writeText(rib).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    const original = btn.textContent;
+    btn.textContent = currentLang === 'ar' ? '✓ تم النسخ' : '✓ Copié';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  });
+}
   </script>
 </body>
 </html>
