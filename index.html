@@ -215,6 +215,12 @@
     }
     footer strong { color: var(--white); }
     footer .footer-slogan { margin-top: 0.4rem; opacity: 0.7; font-size: 0.85rem; }
+    /* ANIMATIONS */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
@@ -240,7 +246,7 @@
     </p>
     <a href="#donate" class="cta-btn" data-ar="تبرع الآن" data-fr="Faire un don maintenant">تبرع الآن</a>
   </section>
-  <section id="about">
+  <section id="about" class="reveal">
     <div class="section-container">
       <h2 class="section-title" data-ar="من نحن" data-fr="À propos de nous">من نحن</h2>
       <div class="section-line"></div>
@@ -274,7 +280,7 @@
       </div>
     </div>
   </section>
-  <section id="donate">
+  <section id="donate" class="reveal">
     <div class="donate-card">
       <h2 class="section-title" data-ar="تبرع الآن" data-fr="Faire un don">تبرع الآن</h2>
       <div class="section-line"></div>
@@ -319,7 +325,7 @@
       </a>
     </div>
   </section>
-  <section id="contact">
+  <section id="contact" class="reveal">
     <div class="section-container">
       <h2 class="section-title" data-ar="اتصل بنا" data-fr="Contactez-nous">اتصل بنا</h2>
       <div class="section-line"></div>
@@ -379,6 +385,11 @@ function copyRIB() {
     setTimeout(() => { btn.textContent = original; }, 2000);
   });
 }
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
