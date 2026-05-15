@@ -260,6 +260,24 @@
           </div>
         </div>
 
+        <!-- Card 4 -->
+        <div class="card-section">
+          <div class="card-section-title">البطاقة 4</div>
+          <div class="icon-row">
+            <label>الأيقونة:</label>
+            <input class="icon-input" type="text" id="card4-icon" oninput="document.getElementById('card4-icon-preview').textContent=this.value" />
+            <span class="icon-preview" id="card4-icon-preview">⭐</span>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>العنوان (عربي)</label><input type="text" id="card4-title-ar" dir="rtl" /></div>
+            <div class="form-group"><label>Titre (français)</label><input type="text" id="card4-title-fr" dir="ltr" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>النص (عربي)</label><textarea id="card4-text-ar" rows="2" dir="rtl"></textarea></div>
+            <div class="form-group"><label>Texte (français)</label><textarea id="card4-text-fr" rows="2" dir="ltr"></textarea></div>
+          </div>
+        </div>
+
         <div class="form-actions">
           <button class="btn btn-blue" onclick="saveAbout()">💾 حفظ التغييرات</button>
         </div>
@@ -475,7 +493,7 @@ async function loadAbout() {
   if (error || !data) return;
   document.getElementById('about-text-ar').value  = data.text_ar  || '';
   document.getElementById('about-text-fr').value  = data.text_fr  || '';
-  [1, 2, 3].forEach(n => {
+  [1, 2, 3, 4].forEach(n => {
     const icon = data['card' + n + '_icon'] || '';
     document.getElementById('card' + n + '-icon').value = icon;
     document.getElementById('card' + n + '-icon-preview').textContent = icon;
@@ -492,7 +510,7 @@ async function saveAbout() {
     text_ar: document.getElementById('about-text-ar').value.trim(),
     text_fr: document.getElementById('about-text-fr').value.trim(),
   };
-  [1, 2, 3].forEach(n => {
+  [1, 2, 3, 4].forEach(n => {
     payload['card' + n + '_icon']     = document.getElementById('card' + n + '-icon').value.trim();
     payload['card' + n + '_title_ar'] = document.getElementById('card' + n + '-title-ar').value.trim();
     payload['card' + n + '_title_fr'] = document.getElementById('card' + n + '-title-fr').value.trim();

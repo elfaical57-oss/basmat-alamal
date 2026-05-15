@@ -474,6 +474,13 @@
               نعمل معاً لبناء مجتمع أكثر تكافلاً وتعاطفاً.
             </p>
           </div>
+          <div class="about-card" id="about-card-4">
+            <div class="icon">⭐</div>
+            <h3 data-ar="التميز" data-fr="Excellence">التميز</h3>
+            <p data-ar="نسعى دائماً إلى تقديم أفضل خدمة للمحتاجين." data-fr="Nous visons toujours à offrir le meilleur service aux personnes dans le besoin.">
+              نسعى دائماً إلى تقديم أفضل خدمة للمحتاجين.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -716,7 +723,7 @@ async function loadAbout() {
     }
 
     setEl(document.getElementById('about-text'), d.text_ar, d.text_fr);
-    [1, 2, 3].forEach(n => {
+    [1, 2, 3, 4].forEach(n => {
       const card = document.getElementById('about-card-' + n);
       if (!card) return;
       card.querySelector('.icon').textContent = d['card' + n + '_icon'] || '';
