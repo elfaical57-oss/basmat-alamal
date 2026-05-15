@@ -23,7 +23,7 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Cairo', sans-serif; background: var(--white); color: var(--text); line-height: 1.7; }
+    body { font-family: 'Cairo', sans-serif; background: var(--white); color: var(--text); line-height: 1.7; overflow-x: hidden; }
     body.fr { font-family: 'Poppins', sans-serif; }
 
     /* ── NAV ── */
@@ -53,7 +53,10 @@
     .lang-btn:hover { background: var(--red-dark); }
     @media (max-width: 640px) {
       .nav-links { display: none; }
-      nav { padding: 0.6rem 1rem; }
+      nav { padding: 0.5rem 0.75rem; }
+      .nav-brand img { height: 36px; width: 36px; }
+      .nav-brand span { font-size: 0.85rem; }
+      .lang-btn { padding: 0.3rem 0.75rem; font-size: 0.78rem; }
     }
 
     /* ── HERO ── */
@@ -61,7 +64,7 @@
 
     .hero-top {
       background: var(--blue);
-      padding: 2.5rem 2rem 1.5rem;
+      padding: 2.5rem 1.25rem 1.5rem;
       text-align: center;
       color: var(--white);
     }
@@ -282,6 +285,36 @@
     /* ── ANIMATIONS ── */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      #home { padding-top: 56px; }
+      .hero-top { padding: 1.75rem 1rem 1rem; }
+      .hero-logo { width: 90px; height: 90px; }
+      .hero-logo-fallback { width: 90px; height: 90px; font-size: 2rem; }
+      .hero-tags { font-size: 0.85rem; gap: 0.3rem 0.6rem; }
+      .hero-slogan { padding: 1rem 1rem; }
+      .hero-bottom { padding: 1.75rem 1rem 2.5rem; }
+      .hero-bottom-text { font-size: 0.9rem; }
+      .cta-btn { padding: 0.85rem 2rem; font-size: 1rem; }
+
+      .section-header-band { font-size: 1.1rem; padding: 0.8rem 1rem; }
+      .about-inner, .donate-inner, .contact-inner { padding: 2rem 1rem; }
+      .about-text { font-size: 0.95rem; }
+      .about-card { padding: 1.25rem 1rem; }
+
+      .donate-card { padding: 1.5rem 1rem; }
+      .rib-box { padding: 1rem; flex-direction: column; align-items: flex-start; }
+      .rib-number { font-size: 0.82rem; letter-spacing: 0.5px; word-break: break-all; }
+      .copy-btn { align-self: flex-start; }
+
+      .contact-grid { grid-template-columns: 1fr; max-width: 320px; }
+      footer { padding: 1.5rem 0.75rem; }
+    }
+
+    @media (max-width: 360px) {
+      .nav-brand span { display: none; }
+    }
   </style>
 </head>
 <body>
