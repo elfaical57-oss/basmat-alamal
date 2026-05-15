@@ -447,27 +447,27 @@
           <span class="activity-tag" data-ar="ثقافية"   data-fr="Culturelle">ثقافية</span>
           <span class="activity-tag" data-ar="رياضية"   data-fr="Sportive">رياضية</span>
         </div>
-        <p class="about-text"
+        <p class="about-text" id="about-text"
           data-ar="جمعية بصمة الأمل جمعية مجتمعية مقرها طنجة، تعمل على مساعدة الأسر المحتاجة خلال الأوقات العصيبة. نؤمن بأن كل مساهمة — مهما كانت صغيرة — تُحدث فرقاً حقيقياً في حياة الآخرين."
           data-fr="L'association Basmat Al Amal est une organisation communautaire basée à Tanger, au Maroc. Elle aide les familles dans le besoin lors des moments difficiles. Nous croyons que chaque contribution — si petite soit-elle — fait une vraie différence.">
           جمعية بصمة الأمل جمعية مجتمعية مقرها طنجة، تعمل على مساعدة الأسر المحتاجة خلال الأوقات العصيبة. نؤمن بأن كل مساهمة — مهما كانت صغيرة — تُحدث فرقاً حقيقياً في حياة الآخرين.
         </p>
         <div class="about-grid">
-          <div class="about-card">
+          <div class="about-card" id="about-card-1">
             <div class="icon">🤝</div>
             <h3 data-ar="التضامن" data-fr="Solidarité">التضامن</h3>
             <p data-ar="نقف إلى جانب الأسر في أصعب لحظاتها." data-fr="Nous soutenons les familles dans leurs moments les plus difficiles.">
               نقف إلى جانب الأسر في أصعب لحظاتها.
             </p>
           </div>
-          <div class="about-card">
+          <div class="about-card" id="about-card-2">
             <div class="icon">❤️</div>
             <h3 data-ar="العطاء" data-fr="Générosité">العطاء</h3>
             <p data-ar="كل تبرع يُترجم إلى ابتسامة حقيقية على وجه محتاج." data-fr="Chaque don se traduit par un vrai sourire sur le visage de quelqu'un dans le besoin.">
               كل تبرع يُترجم إلى ابتسامة حقيقية على وجه محتاج.
             </p>
           </div>
-          <div class="about-card">
+          <div class="about-card" id="about-card-3">
             <div class="icon">🌍</div>
             <h3 data-ar="المجتمع" data-fr="Communauté">المجتمع</h3>
             <p data-ar="نعمل معاً لبناء مجتمع أكثر تكافلاً وتعاطفاً." data-fr="Nous travaillons ensemble pour bâtir une communauté plus solidaire et bienveillante.">
@@ -698,7 +698,36 @@ function closeModal(e) {
   }
 }
 
+/* ── LOAD ABOUT FROM SUPABASE ── */
+async function loadAbout() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/about?id=eq.1&select=*`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const arr = await res.json();
+    if (!Array.isArray(arr) || !arr.length) return;
+    const d = arr[0];
+
+    function setEl(el, ar, fr) {
+      if (!el) return;
+      el.setAttribute('data-ar', ar);
+      el.setAttribute('data-fr', fr);
+      el.textContent = currentLang === 'fr' ? fr : ar;
+    }
+
+    setEl(document.getElementById('about-text'), d.text_ar, d.text_fr);
+    [1, 2, 3].forEach(n => {
+      const card = document.getElementById('about-card-' + n);
+      if (!card) return;
+      card.querySelector('.icon').textContent = d['card' + n + '_icon'] || '';
+      setEl(card.querySelector('h3'), d['card' + n + '_title_ar'], d['card' + n + '_title_fr']);
+      setEl(card.querySelector('p'),  d['card' + n + '_text_ar'],  d['card' + n + '_text_fr']);
+    });
+  } catch(e) { /* keep hardcoded defaults */ }
+}
+
 loadPosts();
+loadAbout();
 
   </script>
 </body>

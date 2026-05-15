@@ -98,10 +98,36 @@
     .upload-zone:hover { border-color: var(--blue); background: #eaf4fd; }
     .upload-zone.has-image { padding: 0.75rem; border-style: solid; border-color: var(--blue); }
 
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 3px solid #dde6f0; }
+    .tab-btn { background: none; border: none; padding: 0.65rem 1.4rem; font-family: inherit; font-size: 0.95rem; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: color 0.2s, border-color 0.2s; }
+    .tab-btn.active { color: var(--blue-dark); border-color: var(--blue); }
+
+    /* ── ABOUT FORM ── */
+    .about-section-title {
+      font-size: 1rem; font-weight: 700; color: var(--blue-dark);
+      margin: 1.5rem 0 0.75rem; padding-bottom: 0.4rem;
+      border-bottom: 2px solid #dde6f0;
+    }
+    .card-section {
+      background: #f8fbfe; border-radius: var(--radius);
+      padding: 1.25rem; margin-bottom: 1rem;
+      border: 1px solid #dde6f0;
+    }
+    .card-section-title {
+      font-size: 0.9rem; font-weight: 700; color: var(--blue);
+      margin-bottom: 1rem;
+    }
+    .icon-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .icon-input { width: 70px; font-size: 1.4rem; text-align: center; padding: 0.3rem; border: 2px solid #dde6f0; border-radius: 8px; }
+    .icon-preview { font-size: 2rem; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
     @media (max-width: 500px) {
       header { padding: 0.75rem 1rem; }
       .dashboard { margin: 1rem auto; }
       .post-item { flex-direction: column; align-items: flex-start; }
+      .form-row-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -139,13 +165,100 @@
 <!-- ══ DASHBOARD ══ -->
 <div id="dashboard-screen">
   <div class="dashboard">
-    <div class="dash-title">
-      <span>الأخبار المنشورة</span>
-      <button class="btn btn-blue" onclick="showPostForm()">+ خبر جديد</button>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-news-btn" onclick="switchTab('news')">📰 الأخبار</button>
+      <button class="tab-btn" id="tab-about-btn" onclick="switchTab('about')">ℹ️ من نحن</button>
     </div>
-    <div class="posts-list" id="posts-list">
-      <div class="empty-state">جاري التحميل…</div>
+
+    <!-- News panel -->
+    <div id="tab-news-panel">
+      <div class="dash-title">
+        <span>الأخبار المنشورة</span>
+        <button class="btn btn-blue" onclick="showPostForm()">+ خبر جديد</button>
+      </div>
+      <div class="posts-list" id="posts-list">
+        <div class="empty-state">جاري التحميل…</div>
+      </div>
     </div>
+
+    <!-- About panel -->
+    <div id="tab-about-panel" style="display:none;">
+      <div class="form-card" style="margin:0; box-shadow:none; padding:0;">
+        <h2 style="margin-bottom:1.25rem;">تعديل قسم "من نحن"</h2>
+
+        <p class="about-section-title">النص الرئيسي</p>
+        <div class="form-group">
+          <label>النص بالعربية</label>
+          <textarea id="about-text-ar" rows="3" dir="rtl"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Texte en français</label>
+          <textarea id="about-text-fr" rows="3" dir="ltr"></textarea>
+        </div>
+
+        <!-- Card 1 -->
+        <p class="about-section-title">البطاقة الأولى</p>
+        <div class="card-section">
+          <div class="card-section-title">البطاقة 1</div>
+          <div class="icon-row">
+            <label>الأيقونة:</label>
+            <input class="icon-input" type="text" id="card1-icon" oninput="document.getElementById('card1-icon-preview').textContent=this.value" />
+            <span class="icon-preview" id="card1-icon-preview">🤝</span>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>العنوان (عربي)</label><input type="text" id="card1-title-ar" dir="rtl" /></div>
+            <div class="form-group"><label>Titre (français)</label><input type="text" id="card1-title-fr" dir="ltr" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>النص (عربي)</label><textarea id="card1-text-ar" rows="2" dir="rtl"></textarea></div>
+            <div class="form-group"><label>Texte (français)</label><textarea id="card1-text-fr" rows="2" dir="ltr"></textarea></div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card-section">
+          <div class="card-section-title">البطاقة 2</div>
+          <div class="icon-row">
+            <label>الأيقونة:</label>
+            <input class="icon-input" type="text" id="card2-icon" oninput="document.getElementById('card2-icon-preview').textContent=this.value" />
+            <span class="icon-preview" id="card2-icon-preview">❤️</span>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>العنوان (عربي)</label><input type="text" id="card2-title-ar" dir="rtl" /></div>
+            <div class="form-group"><label>Titre (français)</label><input type="text" id="card2-title-fr" dir="ltr" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>النص (عربي)</label><textarea id="card2-text-ar" rows="2" dir="rtl"></textarea></div>
+            <div class="form-group"><label>Texte (français)</label><textarea id="card2-text-fr" rows="2" dir="ltr"></textarea></div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card-section">
+          <div class="card-section-title">البطاقة 3</div>
+          <div class="icon-row">
+            <label>الأيقونة:</label>
+            <input class="icon-input" type="text" id="card3-icon" oninput="document.getElementById('card3-icon-preview').textContent=this.value" />
+            <span class="icon-preview" id="card3-icon-preview">🌍</span>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>العنوان (عربي)</label><input type="text" id="card3-title-ar" dir="rtl" /></div>
+            <div class="form-group"><label>Titre (français)</label><input type="text" id="card3-title-fr" dir="ltr" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>النص (عربي)</label><textarea id="card3-text-ar" rows="2" dir="rtl"></textarea></div>
+            <div class="form-group"><label>Texte (français)</label><textarea id="card3-text-fr" rows="2" dir="ltr"></textarea></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-blue" onclick="saveAbout()">💾 حفظ التغييرات</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -221,13 +334,22 @@ async function enterApp() {
   document.getElementById('main-header').style.display     = 'flex';
   document.getElementById('user-email-display').textContent = user.email;
   showDashboard();
+  loadPosts();
 }
 
 /* ── NAVIGATION ── */
 function showDashboard() {
   document.getElementById('dashboard-screen').style.display  = 'block';
   document.getElementById('post-form-screen').style.display  = 'none';
-  loadPosts();
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-news-btn').classList.toggle('active', tab === 'news');
+  document.getElementById('tab-about-btn').classList.toggle('active', tab === 'about');
+  document.getElementById('tab-news-panel').style.display  = tab === 'news'  ? 'block' : 'none';
+  document.getElementById('tab-about-panel').style.display = tab === 'about' ? 'block' : 'none';
+  if (tab === 'news')  loadPosts();
+  if (tab === 'about') loadAbout();
 }
 
 function showPostForm(post = null) {
@@ -338,6 +460,41 @@ async function uploadImage(file) {
   if (error) { showToast('فشل رفع الصورة: ' + error.message); console.error('Upload error:', error); return null; }
   const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
   return publicUrl;
+}
+
+/* ── ABOUT ── */
+async function loadAbout() {
+  const { data, error } = await sb.from('about').select('*').eq('id', 1).single();
+  if (error || !data) return;
+  document.getElementById('about-text-ar').value  = data.text_ar  || '';
+  document.getElementById('about-text-fr').value  = data.text_fr  || '';
+  [1, 2, 3].forEach(n => {
+    const icon = data['card' + n + '_icon'] || '';
+    document.getElementById('card' + n + '-icon').value = icon;
+    document.getElementById('card' + n + '-icon-preview').textContent = icon;
+    document.getElementById('card' + n + '-title-ar').value = data['card' + n + '_title_ar'] || '';
+    document.getElementById('card' + n + '-title-fr').value = data['card' + n + '_title_fr'] || '';
+    document.getElementById('card' + n + '-text-ar').value  = data['card' + n + '_text_ar']  || '';
+    document.getElementById('card' + n + '-text-fr').value  = data['card' + n + '_text_fr']  || '';
+  });
+}
+
+async function saveAbout() {
+  const payload = {
+    id: 1,
+    text_ar: document.getElementById('about-text-ar').value.trim(),
+    text_fr: document.getElementById('about-text-fr').value.trim(),
+  };
+  [1, 2, 3].forEach(n => {
+    payload['card' + n + '_icon']     = document.getElementById('card' + n + '-icon').value.trim();
+    payload['card' + n + '_title_ar'] = document.getElementById('card' + n + '-title-ar').value.trim();
+    payload['card' + n + '_title_fr'] = document.getElementById('card' + n + '-title-fr').value.trim();
+    payload['card' + n + '_text_ar']  = document.getElementById('card' + n + '-text-ar').value.trim();
+    payload['card' + n + '_text_fr']  = document.getElementById('card' + n + '-text-fr').value.trim();
+  });
+  const { error } = await sb.from('about').upsert(payload, { onConflict: 'id' });
+  if (error) { showToast('حدث خطأ أثناء الحفظ'); return; }
+  showToast('✓ تم حفظ قسم "من نحن" بنجاح');
 }
 
 /* ── INIT ── */
