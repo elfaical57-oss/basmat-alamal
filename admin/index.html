@@ -87,6 +87,17 @@
     .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--blue-dark); color: var(--white); padding: 0.75rem 1.5rem; border-radius: 30px; font-weight: 600; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 9999; }
     .toast.show { opacity: 1; }
 
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed #b0cfe8; border-radius: var(--radius);
+      padding: 1.5rem; text-align: center; cursor: pointer;
+      color: var(--blue); font-size: 0.9rem; font-weight: 600;
+      transition: border-color 0.2s, background 0.2s;
+      background: #f5faff;
+    }
+    .upload-zone:hover { border-color: var(--blue); background: #eaf4fd; }
+    .upload-zone.has-image { padding: 0.75rem; border-style: solid; border-color: var(--blue); }
+
     @media (max-width: 500px) {
       header { padding: 0.75rem 1rem; }
       .dashboard { margin: 1rem auto; }
@@ -152,8 +163,23 @@
       <textarea id="post-content" placeholder="اكتب محتوى الخبر هنا…"></textarea>
     </div>
     <div class="form-group">
-      <label>رابط الصورة (اختياري)</label>
-      <input type="url" id="post-image" placeholder="https://..." dir="ltr" />
+      <label>الصورة (اختياري)</label>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('image-file').click()">
+        <div id="upload-placeholder">
+          <div style="font-size:2rem;">📷</div>
+          <div>انقر لاختيار صورة</div>
+          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, WEBP — حجم أقصى 5MB</div>
+        </div>
+        <img id="image-preview" src="" alt="" style="display:none;max-height:180px;border-radius:8px;object-fit:cover;" />
+      </div>
+      <input type="file" id="image-file" accept="image/*" style="display:none" onchange="previewImage(event)" />
+      <input type="hidden" id="post-image" />
+      <div id="upload-progress" style="display:none; margin-top:0.5rem;">
+        <div style="background:#dde6f0;border-radius:4px;height:6px;">
+          <div id="progress-bar" style="background:var(--blue);height:6px;border-radius:4px;width:0%;transition:width 0.3s;"></div>
+        </div>
+        <div style="font-size:0.8rem;color:var(--blue);margin-top:0.25rem;">جاري رفع الصورة…</div>
+      </div>
     </div>
     <div class="form-actions">
       <button class="btn btn-blue" onclick="savePost()">حفظ ونشر</button>
@@ -212,6 +238,18 @@ function showPostForm(post = null) {
   document.getElementById('post-title').value   = post ? post.title : '';
   document.getElementById('post-content').value = post ? post.content : '';
   document.getElementById('post-image').value   = post ? (post.image_url || '') : '';
+  document.getElementById('image-file').value   = '';
+  const preview = document.getElementById('image-preview');
+  const zone    = document.getElementById('upload-zone');
+  if (post && post.image_url) {
+    preview.src = post.image_url; preview.style.display = 'block';
+    document.getElementById('upload-placeholder').style.display = 'none';
+    zone.classList.add('has-image');
+  } else {
+    preview.src = ''; preview.style.display = 'none';
+    document.getElementById('upload-placeholder').style.display = 'block';
+    zone.classList.remove('has-image');
+  }
 }
 
 /* ── CRUD ── */
@@ -240,9 +278,16 @@ async function savePost() {
   const id      = document.getElementById('edit-id').value;
   const title   = document.getElementById('post-title').value.trim();
   const content = document.getElementById('post-content').value.trim();
-  const image   = document.getElementById('post-image').value.trim() || null;
   if (!title || !content) { showToast('يرجى ملء العنوان والمحتوى'); return; }
-  const payload = { title, content, image_url: image };
+
+  let imageUrl = document.getElementById('post-image').value.trim() || null;
+  const fileInput = document.getElementById('image-file');
+  if (fileInput.files[0]) {
+    imageUrl = await uploadImage(fileInput.files[0]);
+    if (!imageUrl) return;
+  }
+
+  const payload = { title, content, image_url: imageUrl };
   const { error } = id
     ? await sb.from('posts').update(payload).eq('id', id)
     : await sb.from('posts').insert(payload);
@@ -265,6 +310,34 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ── IMAGE UPLOAD ── */
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const preview = document.getElementById('image-preview');
+  const placeholder = document.getElementById('upload-placeholder');
+  const zone = document.getElementById('upload-zone');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  placeholder.style.display = 'none';
+  zone.classList.add('has-image');
+}
+
+async function uploadImage(file) {
+  const ext = file.name.split('.').pop();
+  const path = `posts/${Date.now()}.${ext}`;
+  const progress = document.getElementById('upload-progress');
+  const bar = document.getElementById('progress-bar');
+  progress.style.display = 'block';
+  bar.style.width = '30%';
+  const { data, error } = await sb.storage.from('images').upload(path, file, { upsert: true });
+  bar.style.width = '100%';
+  setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
+  if (error) { showToast('فشل رفع الصورة'); return null; }
+  const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
+  return publicUrl;
 }
 
 /* ── INIT ── */
