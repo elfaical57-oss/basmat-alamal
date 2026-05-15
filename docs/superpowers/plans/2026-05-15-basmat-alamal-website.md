@@ -1,0 +1,690 @@
+# Basmat Al Amal Website Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Build a bilingual (Arabic/French) one-page scrollable static website for جمعية بصمة الأمل that presents the association and enables donation via bank transfer.
+
+**Architecture:** Single `index.html` file with embedded CSS and vanilla JS — no build step, no framework. Bilingual toggle swaps `dir` attribute and all text nodes via `data-ar`/`data-fr` attributes. Deployable on any static host.
+
+**Tech Stack:** HTML5, CSS3 (custom properties, flexbox, grid), vanilla JS (ES6), Google Fonts (Cairo + Poppins)
+
+---
+
+## File Structure
+
+```
+basmat-alamal/
+├── index.html          # Full page: nav, hero, about, donation, contact, footer
+├── assets/
+│   └── logo.png        # Association logo (user-provided or embedded SVG placeholder)
+└── docs/
+    └── superpowers/
+        ├── specs/2026-05-15-basmat-alamal-website-design.md
+        └── plans/2026-05-15-basmat-alamal-website.md
+```
+
+---
+
+### Task 1: Project scaffold + CSS variables + Google Fonts
+
+**Files:**
+- Create: `basmat-alamal/index.html`
+
+- [ ] **Step 1: Create index.html with HTML shell, meta tags, Google Fonts, and CSS variables**
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>جمعية بصمة الأمل</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue: #4a7fa5;
+      --blue-dark: #2c5f80;
+      --blue-light: #e8f2f9;
+      --red: #c0392b;
+      --red-light: #f9e8e8;
+      --white: #ffffff;
+      --bg: #f4f7fa;
+      --text: #1a1a2e;
+      --text-light: #555;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(74,127,165,0.15);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    body.fr { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body>
+  <!-- sections go here -->
+  <script>
+    // JS goes here
+  </script>
+</body>
+</html>
+```
+
+- [ ] **Step 2: Open index.html in browser to verify fonts load**
+
+```bash
+open /Users/adnanbahri/basmat-alamal/index.html
+```
+
+Expected: blank white page, no console errors, Cairo font loads.
+
+- [ ] **Step 3: Commit**
+
+```bash
+cd /Users/adnanbahri/basmat-alamal && git init && git add index.html && git commit -m "feat: project scaffold with CSS variables and Google Fonts"
+```
+
+---
+
+### Task 2: Navigation bar
+
+**Files:**
+- Modify: `basmat-alamal/index.html` — add `<nav>` inside `<body>` and nav CSS inside `<style>`
+
+- [ ] **Step 1: Add nav CSS inside `<style>` block (before closing `</style>`)**
+
+```css
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: var(--white);
+  border-bottom: 3px solid var(--red);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.nav-brand { display: flex; align-items: center; gap: 0.75rem; }
+.nav-brand img { height: 48px; width: 48px; object-fit: contain; border-radius: 50%; }
+.nav-brand span { font-size: 1.1rem; font-weight: 700; color: var(--blue-dark); }
+.nav-links { display: flex; gap: 1.5rem; list-style: none; }
+.nav-links a {
+  text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.95rem;
+  padding: 0.25rem 0; border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-links a:hover { color: var(--blue); border-color: var(--blue); }
+.lang-btn {
+  background: var(--blue); color: var(--white);
+  border: none; border-radius: 20px;
+  padding: 0.4rem 1rem; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+  font-family: inherit;
+}
+.lang-btn:hover { background: var(--blue-dark); }
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  nav { padding: 0.6rem 1rem; }
+}
+```
+
+- [ ] **Step 2: Add `<nav>` HTML inside `<body>` (replace `<!-- sections go here -->`)**
+
+```html
+<nav>
+  <div class="nav-brand">
+    <img src="assets/logo.png" alt="بصمة الأمل" onerror="this.style.display='none'" />
+    <span data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#home" data-ar="الرئيسية" data-fr="Accueil">الرئيسية</a></li>
+    <li><a href="#about" data-ar="من نحن" data-fr="À propos">من نحن</a></li>
+    <li><a href="#donate" data-ar="تبرع" data-fr="Faire un don">تبرع</a></li>
+    <li><a href="#contact" data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</a></li>
+  </ul>
+  <button class="lang-btn" onclick="toggleLang()">FR</button>
+</nav>
+```
+
+- [ ] **Step 3: Verify in browser**
+
+```bash
+open /Users/adnanbahri/basmat-alamal/index.html
+```
+
+Expected: fixed nav bar with red bottom border, logo placeholder, links, FR button.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html && git commit -m "feat: fixed navigation bar with language toggle button"
+```
+
+---
+
+### Task 3: Hero section
+
+**Files:**
+- Modify: `basmat-alamal/index.html` — add hero section HTML and CSS
+
+- [ ] **Step 1: Add hero CSS inside `<style>` block**
+
+```css
+/* HERO */
+#home {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 60%, #6fa8c8 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 7rem 2rem 4rem;
+  color: var(--white);
+}
+.hero-logo {
+  width: 140px; height: 140px; object-fit: contain;
+  border-radius: 50%; background: var(--white);
+  padding: 12px; margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+.hero-logo-fallback {
+  width: 140px; height: 140px; border-radius: 50%;
+  background: var(--white); display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem; font-size: 3rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+#home h1 {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 900; margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+#home .subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  opacity: 0.9; margin-bottom: 2.5rem;
+  font-weight: 400;
+}
+.cta-btn {
+  background: var(--red); color: var(--white);
+  border: none; border-radius: 30px;
+  padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700;
+  cursor: pointer; text-decoration: none; display: inline-block;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(192,57,43,0.4);
+  font-family: inherit;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.5); }
+```
+
+- [ ] **Step 2: Add hero HTML after `</nav>`**
+
+```html
+<section id="home">
+  <img class="hero-logo" src="assets/logo.png" alt="بصمة الأمل"
+    onerror="this.outerHTML='<div class=\'hero-logo-fallback\'>🤲</div>'" />
+  <h1 data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</h1>
+  <p class="subtitle" data-ar="ضع البصمة ترسم البسمة" data-fr="Laissez une empreinte, dessinez un sourire">
+    ضع البصمة ترسم البسمة
+  </p>
+  <a href="#donate" class="cta-btn" data-ar="تبرع الآن" data-fr="Faire un don maintenant">تبرع الآن</a>
+</section>
+```
+
+- [ ] **Step 3: Verify in browser**
+
+```bash
+open /Users/adnanbahri/basmat-alamal/index.html
+```
+
+Expected: full-viewport blue gradient hero with logo (or emoji fallback), slogan, red CTA button.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html && git commit -m "feat: hero section with gradient, logo, slogan, CTA button"
+```
+
+---
+
+### Task 4: About section
+
+**Files:**
+- Modify: `basmat-alamal/index.html`
+
+- [ ] **Step 1: Add about CSS inside `<style>`**
+
+```css
+/* ABOUT */
+#about {
+  background: var(--white); padding: 5rem 2rem;
+}
+.section-container { max-width: 900px; margin: 0 auto; }
+.section-title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 900; color: var(--blue-dark);
+  text-align: center; margin-bottom: 0.5rem;
+}
+.section-line {
+  width: 60px; height: 4px; background: var(--red);
+  margin: 0 auto 2.5rem; border-radius: 2px;
+}
+.about-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem; margin-top: 1rem;
+}
+.about-card {
+  background: var(--blue-light); border-radius: var(--radius);
+  padding: 2rem 1.5rem; text-align: center;
+  border-top: 4px solid var(--blue);
+}
+.about-card .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.about-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.5rem; }
+.about-card p { color: var(--text-light); font-size: 0.95rem; }
+.about-text {
+  text-align: center; font-size: 1.05rem; color: var(--text-light);
+  max-width: 700px; margin: 0 auto 2.5rem; line-height: 1.9;
+}
+```
+
+- [ ] **Step 2: Add about HTML after `</section>` (hero)**
+
+```html
+<section id="about">
+  <div class="section-container">
+    <h2 class="section-title" data-ar="من نحن" data-fr="À propos de nous">من نحن</h2>
+    <div class="section-line"></div>
+    <p class="about-text"
+      data-ar="جمعية بصمة الأمل جمعية مجتمعية مقرها طنجة، تعمل على مساعدة الأسر المحتاجة خلال الأوقات العصيبة. نؤمن بأن كل مساهمة — مهما كانت صغيرة — تُحدث فرقاً حقيقياً في حياة الآخرين."
+      data-fr="L'association Basmat Al Amal est une organisation communautaire basée à Tanger, au Maroc. Elle aide les familles dans le besoin lors des moments difficiles. Nous croyons que chaque contribution — si petite soit-elle — fait une vraie différence.">
+      جمعية بصمة الأمل جمعية مجتمعية مقرها طنجة، تعمل على مساعدة الأسر المحتاجة خلال الأوقات العصيبة. نؤمن بأن كل مساهمة — مهما كانت صغيرة — تُحدث فرقاً حقيقياً في حياة الآخرين.
+    </p>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="icon">🤝</div>
+        <h3 data-ar="التضامن" data-fr="Solidarité">التضامن</h3>
+        <p data-ar="نقف إلى جانب الأسر في أصعب لحظاتها." data-fr="Nous soutenons les familles dans leurs moments les plus difficiles.">
+          نقف إلى جانب الأسر في أصعب لحظاتها.
+        </p>
+      </div>
+      <div class="about-card">
+        <div class="icon">❤️</div>
+        <h3 data-ar="العطاء" data-fr="Générosité">العطاء</h3>
+        <p data-ar="كل تبرع يُترجم إلى ابتسامة حقيقية على وجه محتاج." data-fr="Chaque don se traduit par un vrai sourire sur le visage de quelqu'un dans le besoin.">
+          كل تبرع يُترجم إلى ابتسامة حقيقية على وجه محتاج.
+        </p>
+      </div>
+      <div class="about-card">
+        <div class="icon">🌍</div>
+        <h3 data-ar="المجتمع" data-fr="Communauté">المجتمع</h3>
+        <p data-ar="نعمل معاً لبناء مجتمع أكثر تكافلاً وتعاطفاً." data-fr="Nous travaillons ensemble pour bâtir une communauté plus solidaire et bienveillante.">
+          نعمل معاً لبناء مجتمع أكثر تكافلاً وتعاطفاً.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+- [ ] **Step 3: Verify in browser — scroll down past hero**
+
+Expected: white section with 3 blue cards (solidarity, generosity, community).
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html && git commit -m "feat: about section with 3 mission cards"
+```
+
+---
+
+### Task 5: Donation section
+
+**Files:**
+- Modify: `basmat-alamal/index.html`
+
+- [ ] **Step 1: Add donation CSS inside `<style>`**
+
+```css
+/* DONATE */
+#donate {
+  background: var(--bg); padding: 5rem 2rem;
+}
+.donate-card {
+  background: var(--blue-dark); color: var(--white);
+  border-radius: var(--radius); padding: 3rem 2.5rem;
+  max-width: 700px; margin: 0 auto;
+  box-shadow: var(--shadow);
+}
+.donate-card .section-title { color: var(--white); }
+.donate-card .section-line { background: var(--red); }
+.rib-box {
+  background: rgba(255,255,255,0.12);
+  border: 2px dashed rgba(255,255,255,0.4);
+  border-radius: var(--radius); padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0; display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+}
+.rib-label { font-size: 0.85rem; opacity: 0.8; margin-bottom: 0.25rem; }
+.rib-number {
+  font-size: 1rem; font-weight: 700; letter-spacing: 1px;
+  font-family: 'Courier New', monospace;
+  direction: ltr; text-align: left;
+}
+.copy-btn {
+  background: var(--red); color: var(--white);
+  border: none; border-radius: 8px;
+  padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+  font-family: inherit;
+}
+.copy-btn:hover { opacity: 0.85; }
+.donate-steps { list-style: none; margin: 1.5rem 0; }
+.donate-steps li {
+  padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.15);
+  font-size: 0.95rem; display: flex; align-items: flex-start; gap: 0.75rem;
+}
+.donate-steps li:last-child { border-bottom: none; }
+.step-num {
+  background: var(--red); color: var(--white);
+  border-radius: 50%; width: 24px; height: 24px; min-width: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700;
+}
+.whatsapp-btn {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  background: #25d366; color: var(--white);
+  border: none; border-radius: 30px;
+  padding: 0.9rem 2rem; font-size: 1rem; font-weight: 700;
+  text-decoration: none; margin-top: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+  font-family: inherit;
+}
+.whatsapp-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,211,102,0.5); }
+```
+
+- [ ] **Step 2: Add donation HTML after about `</section>`**
+
+```html
+<section id="donate">
+  <div class="donate-card">
+    <h2 class="section-title" data-ar="تبرع الآن" data-fr="Faire un don">تبرع الآن</h2>
+    <div class="section-line"></div>
+    <p style="opacity:0.9; margin-bottom:1rem;"
+      data-ar="يمكنك المشاركة في هذا الخير من بيتك عبر التحويل البنكي إلى الحساب التالي:"
+      data-fr="Vous pouvez participer depuis chez vous via virement bancaire vers le compte suivant :">
+      يمكنك المشاركة في هذا الخير من بيتك عبر التحويل البنكي إلى الحساب التالي:
+    </p>
+    <div class="rib-box">
+      <div>
+        <div class="rib-label" data-ar="BMC Bank — رقم الحساب" data-fr="BMC Bank — Numéro de compte">BMC Bank — رقم الحساب</div>
+        <div class="rib-number">011.640.0000.09.200.00.13473.55</div>
+      </div>
+      <button class="copy-btn" onclick="copyRIB()" data-ar="نسخ" data-fr="Copier">نسخ</button>
+    </div>
+    <ul class="donate-steps">
+      <li>
+        <span class="step-num">1</span>
+        <span data-ar="توجّه إلى تطبيق BMC Bank أو أقرب وكالة بنكية."
+              data-fr="Accédez à l'application BMC Bank ou à l'agence la plus proche.">
+          توجّه إلى تطبيق BMC Bank أو أقرب وكالة بنكية.
+        </span>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <span data-ar="أدخل رقم الحساب أعلاه وأتمّ التحويل."
+              data-fr="Saisissez le numéro de compte ci-dessus et finalisez le virement.">
+          أدخل رقم الحساب أعلاه وأتمّ التحويل.
+        </span>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <span data-ar="تواصل معنا عبر واتساب لإبلاغنا بتبرعك — شكراً لك!"
+              data-fr="Contactez-nous sur WhatsApp pour nous informer de votre don — merci !">
+          تواصل معنا عبر واتساب لإبلاغنا بتبرعك — شكراً لك!
+        </span>
+      </li>
+    </ul>
+    <a class="whatsapp-btn" href="https://wa.me/212645384897" target="_blank" rel="noopener">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      <span data-ar="تواصل عبر واتساب" data-fr="Contacter via WhatsApp">تواصل عبر واتساب</span>
+    </a>
+  </div>
+</section>
+```
+
+- [ ] **Step 3: Verify in browser**
+
+Expected: dark blue card with RIB in dashed box, copy button, 3 steps, green WhatsApp button.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html && git commit -m "feat: donation section with RIB, steps, WhatsApp button"
+```
+
+---
+
+### Task 6: Contact section + Footer
+
+**Files:**
+- Modify: `basmat-alamal/index.html`
+
+- [ ] **Step 1: Add contact and footer CSS**
+
+```css
+/* CONTACT */
+#contact {
+  background: var(--white); padding: 5rem 2rem;
+}
+.contact-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem; max-width: 700px; margin: 0 auto;
+}
+.contact-item {
+  background: var(--blue-light); border-radius: var(--radius);
+  padding: 1.75rem 1.25rem; text-align: center;
+  border-bottom: 4px solid var(--blue);
+  text-decoration: none; color: var(--text);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.contact-item:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.contact-item .c-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+.contact-item h3 { font-size: 1rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.25rem; }
+.contact-item p { font-size: 0.9rem; color: var(--text-light); direction: ltr; }
+
+/* FOOTER */
+footer {
+  background: var(--blue-dark); color: rgba(255,255,255,0.85);
+  text-align: center; padding: 2rem 1rem;
+  font-size: 0.9rem;
+}
+footer strong { color: var(--white); }
+footer .footer-slogan { margin-top: 0.4rem; opacity: 0.7; font-size: 0.85rem; }
+```
+
+- [ ] **Step 2: Add contact HTML after donate `</section>`**
+
+```html
+<section id="contact">
+  <div class="section-container">
+    <h2 class="section-title" data-ar="اتصل بنا" data-fr="Contactez-nous">اتصل بنا</h2>
+    <div class="section-line"></div>
+    <div class="contact-grid">
+      <a class="contact-item" href="tel:+212645384897">
+        <div class="c-icon">📞</div>
+        <h3 data-ar="هاتف" data-fr="Téléphone">هاتف</h3>
+        <p>+212 645 384 897</p>
+      </a>
+      <a class="contact-item" href="https://wa.me/212645384897" target="_blank" rel="noopener">
+        <div class="c-icon">💬</div>
+        <h3>WhatsApp</h3>
+        <p>+212 645 384 897</p>
+      </a>
+      <a class="contact-item" href="https://www.facebook.com/basmatalamal" target="_blank" rel="noopener">
+        <div class="c-icon">📘</div>
+        <h3>Facebook</h3>
+        <p data-ar="جمعية بصمة الأمل" data-fr="Basmat Al Amal">جمعية بصمة الأمل</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</strong>
+  <div class="footer-slogan" data-ar="ضع البصمة ترسم البسمة" data-fr="Laissez une empreinte, dessinez un sourire">
+    ضع البصمة ترسم البسمة
+  </div>
+  <div style="margin-top:0.75rem; opacity:0.5; font-size:0.8rem;">© 2026</div>
+</footer>
+```
+
+- [ ] **Step 3: Verify in browser**
+
+Expected: 3 contact cards (phone, WhatsApp, Facebook), dark blue footer with slogan.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add index.html && git commit -m "feat: contact section and footer"
+```
+
+---
+
+### Task 7: Bilingual JS toggle
+
+**Files:**
+- Modify: `basmat-alamal/index.html` — replace `// JS goes here` inside `<script>`
+
+- [ ] **Step 1: Replace `// JS goes here` with the full bilingual toggle JS**
+
+```javascript
+let currentLang = 'ar';
+
+function toggleLang() {
+  currentLang = currentLang === 'ar' ? 'fr' : 'ar';
+  applyLang(currentLang);
+}
+
+function applyLang(lang) {
+  const html = document.documentElement;
+  html.setAttribute('lang', lang);
+  html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.body.classList.toggle('fr', lang === 'fr');
+
+  document.querySelectorAll('[data-ar]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+
+  document.querySelector('.lang-btn').textContent = lang === 'ar' ? 'FR' : 'AR';
+}
+
+function copyRIB() {
+  const rib = '011.640.0000.09.200.00.13473.55';
+  navigator.clipboard.writeText(rib).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    const original = btn.textContent;
+    btn.textContent = currentLang === 'ar' ? '✓ تم النسخ' : '✓ Copié';
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  });
+}
+```
+
+- [ ] **Step 2: Test bilingual toggle in browser**
+
+```bash
+open /Users/adnanbahri/basmat-alamal/index.html
+```
+
+Expected:
+1. Click FR → all text switches to French, direction becomes LTR
+2. Click AR → switches back to Arabic RTL
+3. Click نسخ/Copier → RIB copied, button shows confirmation for 2 seconds
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add index.html && git commit -m "feat: bilingual AR/FR toggle with RTL/LTR direction switch"
+```
+
+---
+
+### Task 8: Polish — scroll animation + mobile nav + copy logo
+
+**Files:**
+- Modify: `basmat-alamal/index.html`
+- Create: `basmat-alamal/assets/` (directory for logo)
+
+- [ ] **Step 1: Create assets directory and add logo instructions**
+
+```bash
+mkdir -p /Users/adnanbahri/basmat-alamal/assets
+```
+
+Save the logo image as `/Users/adnanbahri/basmat-alamal/assets/logo.png`. If unavailable, the emoji fallback (🤲) already handles it gracefully.
+
+- [ ] **Step 2: Add scroll-reveal animation CSS inside `<style>`**
+
+```css
+/* ANIMATIONS */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+```
+
+- [ ] **Step 3: Add reveal class to sections and init JS inside `<script>` (after existing JS)**
+
+Add `class="reveal"` to `#about`, `#donate`, `#contact` opening tags:
+```html
+<section id="about" class="reveal">
+<section id="donate" class="reveal">
+<section id="contact" class="reveal">
+```
+
+Add to `<script>` block after existing JS:
+```javascript
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+```
+
+- [ ] **Step 4: Final browser check — full scroll + mobile viewport**
+
+```bash
+open /Users/adnanbahri/basmat-alamal/index.html
+```
+
+Check in browser DevTools → toggle mobile view (375px width):
+- Nav still shows logo + lang button
+- All sections readable and well-padded
+- Sections fade in as you scroll
+
+- [ ] **Step 5: Final commit**
+
+```bash
+git add index.html assets/ && git commit -m "feat: scroll animations, mobile layout, logo asset directory"
+```
+
+---
+
+## Self-Review
+
+**Spec coverage:**
+- ✅ Bilingual AR/FR with RTL/LTR → Task 7
+- ✅ Navigation → Task 2
+- ✅ Hero with logo + slogan + CTA → Task 3
+- ✅ About / من نحن → Task 4
+- ✅ Donation with RIB + WhatsApp → Task 5
+- ✅ Contact → Task 6
+- ✅ Footer → Task 6
+- ✅ Mobile responsive → Tasks 2, 8
+- ✅ Single HTML file, no framework → Task 1
+
+**Placeholder scan:** All code blocks are complete. No TBD or TODO.
+
+**Type consistency:** `toggleLang()`, `copyRIB()`, `applyLang()` used consistently. `data-ar`/`data-fr` pattern consistent across all sections.
