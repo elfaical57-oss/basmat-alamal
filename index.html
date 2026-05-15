@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
     :root {
       --blue: #2980b9;
@@ -572,29 +571,17 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* ── LOAD POSTS FROM GITHUB ── */
-const REPO = 'elfaical57-oss/basmat-alamal';
-const POSTS_PATH = 'content/posts';
-
-function parseFrontmatter(raw) {
-  const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!m) return null;
-  const meta = {};
-  m[1].split('\n').forEach(l => {
-    const i = l.indexOf(':');
-    if (i > 0) meta[l.slice(0, i).trim()] = l.slice(i + 1).trim().replace(/^["']|["']$/g, '');
-  });
-  meta.body = m[2].trim();
-  return meta;
-}
+/* ── LOAD POSTS FROM SUPABASE ── */
+const SB_URL = 'https://yyjbcduakapgblcgqieq.supabase.co';
+const SB_KEY = 'sb_publishable_SQxTQ9a2HcskaUmAgFOVrw_qAvbIZlx';
 
 function renderPost(p) {
-  const date = p.date ? new Date(p.date).toLocaleDateString('ar-MA', { year:'numeric', month:'long', day:'numeric' }) : '';
-  const body = p.body.replace(/#{1,6}\s?/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  const date = new Date(p.created_at).toLocaleDateString('ar-MA', { year:'numeric', month:'long', day:'numeric' });
+  const body = (p.content || '').replace(/\n/g, '<br>');
   return `<div class="post-card">
-    ${p.image ? `<img class="post-img" src="${p.image}" alt="${p.title}" loading="lazy">` : ''}
+    ${p.image_url ? `<img class="post-img" src="${p.image_url}" alt="${p.title}" loading="lazy">` : ''}
     <div class="post-content">
-      <h3 class="post-title">${p.title || ''}</h3>
+      <h3 class="post-title">${p.title}</h3>
       <span class="post-date">${date}</span>
       <p class="post-body">${body}</p>
     </div>
@@ -604,25 +591,16 @@ function renderPost(p) {
 async function loadPosts() {
   const container = document.getElementById('posts-container');
   try {
-    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}`);
-    if (!res.ok) { container.innerHTML = ''; return; }
-    const files = (await res.json()).filter(f => f.name.endsWith('.md')).sort((a,b) => b.name.localeCompare(a.name)).slice(0, 6);
-    if (!files.length) { container.innerHTML = `<p class="no-posts" style="grid-column:1/-1;">لا توجد أخبار بعد.</p>`; return; }
-    const posts = await Promise.all(files.map(async f => {
-      const r = await fetch(f.download_url);
-      return parseFrontmatter(await r.text());
-    }));
-    container.innerHTML = posts.filter(Boolean).map(renderPost).join('');
+    const res = await fetch(`${SB_URL}/rest/v1/posts?select=*&order=created_at.desc&limit=6`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const data = await res.json();
+    if (!data.length) { container.innerHTML = '<p class="no-posts" style="grid-column:1/-1;">لا توجد أخبار بعد.</p>'; return; }
+    container.innerHTML = data.map(renderPost).join('');
   } catch(e) { container.innerHTML = ''; }
 }
 loadPosts();
 
-/* Netlify Identity redirect */
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', user => {
-    if (!user) window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-  });
-}
   </script>
 </body>
 </html>
