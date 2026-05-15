@@ -293,7 +293,7 @@
       cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
     }
     .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(41,128,185,0.22); }
-    .post-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .post-img { width: 100%; aspect-ratio: 16/9; object-fit: contain; background: #f0f6fc; display: block; }
     .post-content { padding: 1.25rem; }
     .post-title { font-size: 1.05rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.3rem; }
     .post-date { font-size: 0.78rem; color: var(--red); font-weight: 600; display: block; margin-bottom: 0.6rem; }
@@ -323,7 +323,7 @@
       animation: modalIn 0.25s ease;
     }
     @keyframes modalIn { from { transform: translateY(30px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-    .modal-img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 16px 16px 0 0; display: block; }
+    .modal-img { width: 100%; max-height: 420px; object-fit: contain; background: #f0f6fc; border-radius: 16px 16px 0 0; display: block; }
     .modal-body { padding: 1.75rem; }
     .modal-title { font-size: 1.3rem; font-weight: 900; color: var(--blue-dark); margin-bottom: 0.4rem; }
     .modal-date { font-size: 0.82rem; color: var(--red); font-weight: 600; display: block; margin-bottom: 1rem; }
