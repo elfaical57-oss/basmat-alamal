@@ -61,6 +61,47 @@
       .nav-links { display: none; }
       nav { padding: 0.6rem 1rem; }
     }
+    /* HERO */
+    #home {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 60%, #6fa8c8 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 7rem 2rem 4rem;
+      color: var(--white);
+    }
+    .hero-logo {
+      width: 140px; height: 140px; object-fit: contain;
+      border-radius: 50%; background: var(--white);
+      padding: 12px; margin-bottom: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .hero-logo-fallback {
+      width: 140px; height: 140px; border-radius: 50%;
+      background: var(--white); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 3rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    #home h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 900; margin-bottom: 0.5rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    #home .subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      opacity: 0.9; margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+    .cta-btn {
+      background: var(--red); color: var(--white);
+      border: none; border-radius: 30px;
+      padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; text-decoration: none; display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(192,57,43,0.4);
+      font-family: inherit;
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(192,57,43,0.5); }
   </style>
 </head>
 <body>
@@ -77,6 +118,15 @@
     </ul>
     <button class="lang-btn" onclick="toggleLang()">FR</button>
   </nav>
+  <section id="home">
+    <img class="hero-logo" src="assets/logo.png" alt="بصمة الأمل"
+      onerror="this.outerHTML='<div class=\'hero-logo-fallback\'>🤲</div>'" />
+    <h1 data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</h1>
+    <p class="subtitle" data-ar="ضع البصمة ترسم البسمة" data-fr="Laissez une empreinte, dessinez un sourire">
+      ضع البصمة ترسم البسمة
+    </p>
+    <a href="#donate" class="cta-btn" data-ar="تبرع الآن" data-fr="Faire un don maintenant">تبرع الآن</a>
+  </section>
   <!-- sections go here -->
   <script>
     // JS goes here
