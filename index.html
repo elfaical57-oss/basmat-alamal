@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <style>
     :root {
       --blue: #2980b9;
@@ -282,6 +283,28 @@
       margin-top: 0.4rem; opacity: 0.75; font-size: 0.9rem; font-style: italic;
     }
 
+    /* ── ACTUALITÉS ── */
+    #actualites { background: var(--bg); }
+    .actualites-inner { padding: 2.5rem 1.25rem 3rem; max-width: 900px; margin: 0 auto; }
+    .posts-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 1.5rem; margin-top: 0.5rem;
+    }
+    .post-card {
+      background: var(--white); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow);
+      border-top: 4px solid var(--blue);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(41,128,185,0.22); }
+    .post-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+    .post-content { padding: 1.25rem; }
+    .post-title { font-size: 1.05rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.3rem; }
+    .post-date { font-size: 0.78rem; color: var(--red); font-weight: 600; display: block; margin-bottom: 0.6rem; }
+    .post-body { font-size: 0.9rem; color: var(--text-light); line-height: 1.7; }
+    .no-posts { text-align: center; color: var(--text-light); padding: 2rem; font-size: 1rem; }
+    .posts-loading { text-align: center; padding: 2rem; color: var(--text-light); }
+
     /* ── ANIMATIONS ── */
     .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -327,8 +350,9 @@
     <ul class="nav-links">
       <li><a href="#home"    data-ar="الرئيسية"  data-fr="Accueil">الرئيسية</a></li>
       <li><a href="#about"   data-ar="من نحن"    data-fr="À propos">من نحن</a></li>
-      <li><a href="#donate"  data-ar="تبرع"      data-fr="Faire un don">تبرع</a></li>
-      <li><a href="#contact" data-ar="اتصل بنا"  data-fr="Contact">اتصل بنا</a></li>
+      <li><a href="#donate"     data-ar="تبرع"      data-fr="Faire un don">تبرع</a></li>
+      <li><a href="#actualites" data-ar="أخبار"    data-fr="Actualités">أخبار</a></li>
+      <li><a href="#contact"    data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</a></li>
     </ul>
     <button class="lang-btn" onclick="toggleLang()">FR</button>
   </nav>
@@ -472,6 +496,16 @@
     </div>
   </section>
 
+  <!-- ══ ACTUALITÉS ══ -->
+  <section id="actualites" class="reveal">
+    <div class="section-header-band" data-ar="أخبار الجمعية" data-fr="Actualités">أخبار الجمعية</div>
+    <div class="actualites-inner">
+      <div id="posts-container" class="posts-grid">
+        <p class="posts-loading" style="grid-column:1/-1;">جاري التحميل…</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ══ CONTACT ══ -->
   <section id="contact" class="reveal">
     <div class="section-header-band" data-ar="اتصل بنا" data-fr="Contactez-nous">اتصل بنا</div>
@@ -537,6 +571,58 @@ const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── LOAD POSTS FROM GITHUB ── */
+const REPO = 'elfaical57-oss/basmat-alamal';
+const POSTS_PATH = 'content/posts';
+
+function parseFrontmatter(raw) {
+  const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!m) return null;
+  const meta = {};
+  m[1].split('\n').forEach(l => {
+    const i = l.indexOf(':');
+    if (i > 0) meta[l.slice(0, i).trim()] = l.slice(i + 1).trim().replace(/^["']|["']$/g, '');
+  });
+  meta.body = m[2].trim();
+  return meta;
+}
+
+function renderPost(p) {
+  const date = p.date ? new Date(p.date).toLocaleDateString('ar-MA', { year:'numeric', month:'long', day:'numeric' }) : '';
+  const body = p.body.replace(/#{1,6}\s?/g, '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  return `<div class="post-card">
+    ${p.image ? `<img class="post-img" src="${p.image}" alt="${p.title}" loading="lazy">` : ''}
+    <div class="post-content">
+      <h3 class="post-title">${p.title || ''}</h3>
+      <span class="post-date">${date}</span>
+      <p class="post-body">${body}</p>
+    </div>
+  </div>`;
+}
+
+async function loadPosts() {
+  const container = document.getElementById('posts-container');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}`);
+    if (!res.ok) { container.innerHTML = ''; return; }
+    const files = (await res.json()).filter(f => f.name.endsWith('.md')).sort((a,b) => b.name.localeCompare(a.name)).slice(0, 6);
+    if (!files.length) { container.innerHTML = `<p class="no-posts" style="grid-column:1/-1;">لا توجد أخبار بعد.</p>`; return; }
+    const posts = await Promise.all(files.map(async f => {
+      const r = await fetch(f.download_url);
+      return parseFrontmatter(await r.text());
+    }));
+    container.innerHTML = posts.filter(Boolean).map(renderPost).join('');
+  } catch(e) { container.innerHTML = ''; }
+}
+loadPosts();
+
+/* Netlify Identity redirect */
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on('init', user => {
+    if (!user) window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
+  });
+}
   </script>
 </body>
 </html>
