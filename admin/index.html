@@ -335,7 +335,7 @@ async function uploadImage(file) {
   const { data, error } = await sb.storage.from('images').upload(path, file, { upsert: true });
   bar.style.width = '100%';
   setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
-  if (error) { showToast('فشل رفع الصورة'); return null; }
+  if (error) { showToast('فشل رفع الصورة: ' + error.message); console.error('Upload error:', error); return null; }
   const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
   return publicUrl;
 }
