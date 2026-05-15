@@ -492,7 +492,7 @@
         <div class="rib-box">
           <div>
             <div class="rib-label" data-ar="BMC Bank — رقم الحساب" data-fr="BMC Bank — Numéro de compte">BMC Bank — رقم الحساب</div>
-            <div class="rib-number">011.640.0000.09.200.00.13473.55</div>
+            <div class="rib-number">011 640 0000092000017755 13</div>
           </div>
           <button class="copy-btn" onclick="copyRIB()" data-ar="نسخ" data-fr="Copier">نسخ</button>
         </div>
@@ -605,7 +605,7 @@ function applyLang(lang) {
 }
 
 function copyRIB() {
-  const rib = '011.640.0000.09.200.00.13473.55';
+  const rib = '011 640 0000092000017755 13';
   navigator.clipboard.writeText(rib).then(() => {
     const btn = document.querySelector('.copy-btn');
     const original = btn.textContent;
