@@ -357,13 +357,18 @@
     .post-read-more { display: inline-block; margin-top: 0.75rem; font-size: 0.85rem; font-weight: 700; color: var(--blue); }
     .no-posts { text-align: center; color: var(--text-light); padding: 2rem; font-size: 1rem; }
     .see-more-wrap { text-align: center; margin-top: 2rem; }
-    .see-more-btn {
-      background: var(--blue); color: var(--white);
-      border: none; border-radius: 30px; padding: 0.8rem 2rem;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.2s;
+    /* ── PAGINATION ── */
+    .pagination-wrap { display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .page-btn {
+      background: var(--white); color: var(--blue-dark);
+      border: 2px solid var(--blue-light); border-radius: 8px;
+      padding: 0.45rem 0.9rem; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+      min-width: 40px;
     }
-    .see-more-btn:hover { background: var(--blue-dark); }
+    .page-btn:hover { border-color: var(--blue); background: var(--blue-light); }
+    .page-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+    .page-btn.nav-btn { color: var(--blue); }
 
     /* ── POST MODAL ── */
     .modal-overlay {
@@ -705,6 +710,30 @@
 
   </section>
 
+  <!-- ══ ACTUALITÉS ══ -->
+  <section id="actualites" class="reveal">
+    <div class="section-header-band" data-ar="أخبار الجمعية" data-fr="Actualités">أخبار الجمعية</div>
+    <div class="actualites-inner">
+      <div id="posts-container" class="posts-grid">
+        <p class="posts-loading" style="grid-column:1/-1;">جاري التحميل…</p>
+      </div>
+      <div class="pagination-wrap" id="pagination-wrap" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- ══ POST MODAL ══ -->
+  <div class="modal-overlay" id="post-modal" onclick="closeModal(event)">
+    <div class="modal-box">
+      <img class="modal-img" id="modal-img" src="" alt="" style="display:none" />
+      <div class="modal-body">
+        <h2 class="modal-title" id="modal-title"></h2>
+        <span class="modal-date" id="modal-date"></span>
+        <div class="modal-content" id="modal-content"></div>
+        <button class="modal-close" onclick="document.getElementById('post-modal').classList.remove('open');document.body.style.overflow=''" data-ar="إغلاق" data-fr="Fermer">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ ABOUT ══ -->
   <section id="about" class="reveal">
     <div class="section-header-band" data-ar="من نحن" data-fr="À propos de nous">من نحن</div>
@@ -1037,32 +1066,6 @@
     </div>
   </section>
 
-  <!-- ══ ACTUALITÉS ══ -->
-  <section id="actualites" class="reveal">
-    <div class="section-header-band" data-ar="أخبار الجمعية" data-fr="Actualités">أخبار الجمعية</div>
-    <div class="actualites-inner">
-      <div id="posts-container" class="posts-grid">
-        <p class="posts-loading" style="grid-column:1/-1;">جاري التحميل…</p>
-      </div>
-      <div class="see-more-wrap" id="see-more-wrap" style="display:none">
-        <button class="see-more-btn" onclick="loadMorePosts()" data-ar="مزيد من الأخبار ↓" data-fr="Voir plus ↓">مزيد من الأخبار ↓</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ POST MODAL ══ -->
-  <div class="modal-overlay" id="post-modal" onclick="closeModal(event)">
-    <div class="modal-box">
-      <img class="modal-img" id="modal-img" src="" alt="" style="display:none" />
-      <div class="modal-body">
-        <h2 class="modal-title" id="modal-title"></h2>
-        <span class="modal-date" id="modal-date"></span>
-        <div class="modal-content" id="modal-content"></div>
-        <button class="modal-close" onclick="document.getElementById('post-modal').classList.remove('open');document.body.style.overflow=''" data-ar="إغلاق" data-fr="Fermer">إغلاق</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ══ CONTACT ══ -->
   <section id="contact" class="reveal">
     <div class="section-header-band" data-ar="اتصل بنا" data-fr="Contactez-nous">اتصل بنا</div>
@@ -1138,7 +1141,8 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 const SB_URL = 'https://yyjbcduakapgblcgqieq.supabase.co';
 const SB_KEY = 'sb_publishable_SQxTQ9a2HcskaUmAgFOVrw_qAvbIZlx';
 let allPosts = [];
-let showingAll = false;
+const POSTS_PER_PAGE = 3;
+let currentPage = 1;
 
 function excerpt(text, max = 100) {
   if (!text) return '';
@@ -1177,20 +1181,33 @@ async function loadPosts() {
       container.innerHTML = '<p class="no-posts" style="grid-column:1/-1;">لا توجد أخبار بعد.</p>';
       return;
     }
-    renderPosts(allPosts.slice(0, 3));
-    document.getElementById('see-more-wrap').style.display = allPosts.length > 3 ? 'block' : 'none';
+    currentPage = 1;
+    renderPosts(allPosts.slice(0, POSTS_PER_PAGE));
+    renderPagination();
   } catch(e) { container.innerHTML = ''; }
 }
 
-function loadMorePosts() {
-  showingAll = !showingAll;
-  const btn = document.querySelector('.see-more-btn');
-  renderPosts(showingAll ? allPosts : allPosts.slice(0, 3));
-  btn.setAttribute('data-ar', showingAll ? 'عرض أقل ↑' : 'مزيد من الأخبار ↓');
-  btn.setAttribute('data-fr', showingAll ? 'Voir moins ↑' : 'Voir plus ↓');
-  btn.textContent = currentLang === 'fr'
-    ? (showingAll ? 'Voir moins ↑' : 'Voir plus ↓')
-    : (showingAll ? 'عرض أقل ↑' : 'مزيد من الأخبار ↓');
+function renderPagination() {
+  const wrap = document.getElementById('pagination-wrap');
+  const total = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+  if (total <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  let html = '';
+  if (currentPage > 1)
+    html += `<button class="page-btn nav-btn" onclick="goToPage(${currentPage - 1})">←</button>`;
+  for (let i = 1; i <= total; i++)
+    html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+  if (currentPage < total)
+    html += `<button class="page-btn nav-btn" onclick="goToPage(${currentPage + 1})">→</button>`;
+  wrap.innerHTML = html;
+}
+
+function goToPage(n) {
+  currentPage = n;
+  const start = (n - 1) * POSTS_PER_PAGE;
+  renderPosts(allPosts.slice(start, start + POSTS_PER_PAGE));
+  renderPagination();
+  document.getElementById('actualites').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ── POST MODAL ── */
