@@ -425,6 +425,200 @@
     @media (max-width: 360px) {
       .nav-brand span { display: none; }
     }
+
+    /* ── MOBILE NAV ── */
+    .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.82rem; }
+    .hamburger {
+      display: none; background: none; border: none;
+      color: var(--white); font-size: 1.4rem;
+      cursor: pointer; padding: 0.25rem 0.5rem; line-height: 1;
+    }
+    .mobile-nav {
+      display: none; position: fixed;
+      top: 62px; left: 0; right: 0; z-index: 998;
+      background: var(--blue-dark); padding: 0.5rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      border-top: 3px solid var(--red);
+    }
+    .mobile-nav.open { display: block; }
+    .mobile-nav a {
+      display: block; padding: 0.85rem 1.5rem;
+      color: rgba(255,255,255,0.9); text-decoration: none;
+      font-weight: 600; font-size: 0.95rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: background 0.15s;
+    }
+    .mobile-nav a:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+    @media (max-width: 640px) {
+      .hamburger { display: block; }
+    }
+
+    /* ── ABOUT EXPANSION ── */
+    .founding-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--blue-dark); color: white;
+      border-radius: 30px; padding: 0.45rem 1.25rem;
+      font-size: 0.9rem; font-weight: 700;
+      margin: 2rem 0 1.5rem;
+    }
+    .about-vision-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem; margin-top: 1rem;
+    }
+    .vision-card {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 1.5rem 1.25rem;
+      border-right: 5px solid var(--red);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .vision-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .vision-card h3 { color: var(--blue-dark); font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .vision-card p { color: var(--text-light); font-size: 0.9rem; line-height: 1.8; }
+    .vision-card ul { color: var(--text-light); font-size: 0.9rem; line-height: 1.8; padding-right: 1rem; }
+    .vision-card ul li { margin-bottom: 0.2rem; }
+
+    /* ── BOARD ── */
+    #board { background: var(--bg); }
+    .board-inner { padding: 3.5rem 2rem; max-width: 900px; margin: 0 auto; }
+    .board-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 1.5rem;
+    }
+    .board-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 1.75rem 1rem; text-align: center;
+      box-shadow: var(--shadow); border-bottom: 4px solid var(--blue);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .board-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(41,128,185,0.22); }
+    .member-avatar {
+      width: 76px; height: 76px; border-radius: 50%;
+      color: white; font-size: 1.6rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .member-name { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .member-role {
+      display: inline-block; background: var(--blue-light); color: var(--blue-dark);
+      border-radius: 20px; padding: 0.2rem 0.75rem; font-size: 0.78rem; font-weight: 700;
+    }
+
+    /* ── ACTIVITIES ── */
+    #activities { background: var(--white); }
+    .activities-inner { padding: 3.5rem 2rem; max-width: 900px; margin: 0 auto; }
+    .activities-cards {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+    .activity-card {
+      background: var(--white); border-radius: var(--radius);
+      overflow: hidden; box-shadow: var(--shadow); border-top: 4px solid var(--red);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .activity-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(192,57,43,0.2); }
+    .activity-thumb {
+      width: 100%; padding: 2rem 0;
+      display: flex; align-items: center; justify-content: center; font-size: 3rem;
+    }
+    .activity-content { padding: 1.25rem; }
+    .activity-title { font-size: 1rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.3rem; }
+    .activity-period { font-size: 0.78rem; color: var(--red); font-weight: 600; display: block; margin-bottom: 0.5rem; }
+    .activity-desc { font-size: 0.88rem; color: var(--text-light); line-height: 1.6; }
+
+    /* ── GALLERY ── */
+    #gallery { background: var(--bg); }
+    .gallery-inner { padding: 3.5rem 2rem; max-width: 900px; margin: 0 auto; }
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 150px; gap: 0.75rem;
+    }
+    .gallery-item {
+      border-radius: var(--radius); overflow: hidden; position: relative;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .gallery-item.featured { grid-column: span 2; grid-row: span 2; }
+    .gallery-item:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    .gallery-thumb {
+      width: 100%; height: 100%; min-height: 150px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.4rem; color: rgba(255,255,255,0.92);
+    }
+    .gallery-thumb .g-icon { font-size: 2rem; }
+    .gallery-thumb .g-label { font-size: 0.78rem; font-weight: 700; text-align: center; padding: 0 0.5rem; }
+    .gallery-note { text-align: center; margin-top: 1.5rem; color: var(--text-light); font-size: 0.88rem; font-style: italic; }
+    @media (max-width: 480px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 120px; }
+      .gallery-item.featured { grid-column: span 2; }
+    }
+
+    /* ── PARTNERS ── */
+    #partners { background: var(--white); }
+    .partners-inner { padding: 3.5rem 2rem; max-width: 900px; margin: 0 auto; }
+    .partners-flex {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 1.25rem; margin-top: 1rem;
+    }
+    .partner-card {
+      width: 150px; height: 90px; border-radius: var(--radius);
+      border: 2px solid var(--blue-light); background: var(--white);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.4rem; padding: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      color: var(--text-light); text-align: center;
+    }
+    .partner-card:hover { border-color: var(--blue); box-shadow: var(--shadow); transform: translateY(-2px); }
+    .partner-card .p-icon { font-size: 1.8rem; }
+    .partner-card .p-name { font-size: 0.75rem; font-weight: 600; color: var(--text-light); }
+    .partners-note { text-align: center; margin-top: 1.5rem; color: var(--text-light); font-size: 0.88rem; font-style: italic; }
+
+    /* ── VOLUNTEER ── */
+    #volunteer { background: var(--bg); }
+    .volunteer-inner { padding: 3.5rem 2rem; }
+    .volunteer-card {
+      background: var(--white); border-radius: var(--radius);
+      padding: 2.5rem 2rem; max-width: 680px; margin: 0 auto;
+      box-shadow: var(--shadow); border-top: 5px solid var(--blue);
+    }
+    .volunteer-intro { text-align: center; color: var(--text-light); font-size: 0.97rem; margin-bottom: 1.75rem; line-height: 1.8; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-size: 0.88rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0.4rem; }
+    .form-input, .form-select {
+      width: 100%; padding: 0.7rem 1rem;
+      border: 2px solid var(--blue-light); border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit; color: var(--text);
+      background: var(--white); outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--blue); }
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .checkbox-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.88rem; color: var(--text); cursor: pointer;
+      background: var(--bg); border-radius: 20px;
+      padding: 0.3rem 0.8rem; border: 1px solid var(--blue-light);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .checkbox-item:has(input:checked) { background: var(--blue-light); border-color: var(--blue); }
+    .checkbox-item input { accent-color: var(--blue); cursor: pointer; }
+    .volunteer-btn {
+      width: 100%; background: #25d366; color: white;
+      border: none; border-radius: 30px; padding: 1rem;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; margin-top: 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+    }
+    .volunteer-btn:hover { background: #1da851; transform: translateY(-1px); }
+    @media (max-width: 480px) {
+      .board-inner, .activities-inner, .gallery-inner,
+      .partners-inner, .volunteer-inner { padding: 2rem 1rem; }
+      .board-grid { grid-template-columns: repeat(2, 1fr); }
+      .volunteer-card { padding: 1.5rem 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -435,14 +629,33 @@
       <span data-ar="جمعية بصمة الأمل" data-fr="Association Basmat Al Amal">جمعية بصمة الأمل</span>
     </div>
     <ul class="nav-links">
-      <li><a href="#home"    data-ar="الرئيسية"  data-fr="Accueil">الرئيسية</a></li>
-      <li><a href="#about"   data-ar="من نحن"    data-fr="À propos">من نحن</a></li>
-      <li><a href="#donate"     data-ar="تبرع"      data-fr="Faire un don">تبرع</a></li>
+      <li><a href="#home"       data-ar="الرئيسية" data-fr="Accueil">الرئيسية</a></li>
+      <li><a href="#about"      data-ar="من نحن"   data-fr="À propos">من نحن</a></li>
+      <li><a href="#board"      data-ar="المكتب"   data-fr="Bureau">المكتب</a></li>
+      <li><a href="#activities" data-ar="أنشطة"    data-fr="Activités">أنشطة</a></li>
+      <li><a href="#gallery"    data-ar="معرض"     data-fr="Galerie">معرض</a></li>
+      <li><a href="#volunteer"  data-ar="تطوع"     data-fr="Bénévolat">تطوع</a></li>
+      <li><a href="#donate"     data-ar="تبرع"     data-fr="Don">تبرع</a></li>
       <li><a href="#actualites" data-ar="أخبار"    data-fr="Actualités">أخبار</a></li>
       <li><a href="#contact"    data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</a></li>
     </ul>
-    <button class="lang-btn" onclick="toggleLang()">FR</button>
+    <div class="nav-actions">
+      <button class="lang-btn" onclick="toggleLang()">FR</button>
+      <button class="hamburger" onclick="toggleMobileNav()" aria-label="القائمة">☰</button>
+    </div>
   </nav>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#home"       onclick="closeMobileNav()" data-ar="الرئيسية" data-fr="Accueil">الرئيسية</a>
+    <a href="#about"      onclick="closeMobileNav()" data-ar="من نحن"   data-fr="À propos">من نحن</a>
+    <a href="#board"      onclick="closeMobileNav()" data-ar="المكتب المسير" data-fr="Bureau Directeur">المكتب المسير</a>
+    <a href="#activities" onclick="closeMobileNav()" data-ar="الأنشطة والفعاليات" data-fr="Activités & Événements">الأنشطة والفعاليات</a>
+    <a href="#gallery"    onclick="closeMobileNav()" data-ar="معرض الصور" data-fr="Galerie Photos">معرض الصور</a>
+    <a href="#partners"   onclick="closeMobileNav()" data-ar="الشركاء والداعمون" data-fr="Partenaires">الشركاء والداعمون</a>
+    <a href="#volunteer"  onclick="closeMobileNav()" data-ar="التطوع والانخراط" data-fr="Bénévolat">التطوع والانخراط</a>
+    <a href="#donate"     onclick="closeMobileNav()" data-ar="تبرع الآن" data-fr="Faire un don">تبرع الآن</a>
+    <a href="#actualites" onclick="closeMobileNav()" data-ar="أخبار الجمعية" data-fr="Actualités">أخبار الجمعية</a>
+    <a href="#contact"    onclick="closeMobileNav()" data-ar="اتصل بنا" data-fr="Contact">اتصل بنا</a>
+  </div>
 
   <!-- ══ HERO ══ -->
   <section id="home">
@@ -538,6 +751,240 @@
             </p>
           </div>
         </div>
+
+        <!-- Founding + Vision / Mission / Goals -->
+        <div style="text-align:center; margin-top:2.5rem;">
+          <span class="founding-badge">🗓️ <span data-ar="تأسست عام 2020" data-fr="Fondée en 2020">تأسست عام 2020</span></span>
+        </div>
+        <div class="about-vision-grid">
+          <div class="vision-card">
+            <h3 data-ar="🎯 رؤيتنا" data-fr="🎯 Notre vision">🎯 رؤيتنا</h3>
+            <p data-ar="مجتمع طنجاوي متضامن تتكافل فيه الأسر وتتعاون من أجل مستقبل أفضل لجميع أبنائه." data-fr="Une société tangeroise solidaire où les familles s'entraident pour un avenir meilleur.">
+              مجتمع طنجاوي متضامن تتكافل فيه الأسر وتتعاون من أجل مستقبل أفضل لجميع أبنائه.
+            </p>
+          </div>
+          <div class="vision-card">
+            <h3 data-ar="💡 رسالتنا" data-fr="💡 Notre mission">💡 رسالتنا</h3>
+            <p data-ar="تقديم الدعم المادي والمعنوي للأسر المحتاجة، وتنظيم الأنشطة التنموية والثقافية والرياضية لخدمة المجتمع المحلي." data-fr="Apporter un soutien matériel et moral aux familles dans le besoin et organiser des activités au service de la communauté locale.">
+              تقديم الدعم المادي والمعنوي للأسر المحتاجة، وتنظيم الأنشطة التنموية والثقافية والرياضية لخدمة المجتمع المحلي.
+            </p>
+          </div>
+          <div class="vision-card">
+            <h3 data-ar="🏁 أهدافنا" data-fr="🏁 Nos objectifs">🏁 أهدافنا</h3>
+            <ul>
+              <li data-ar="دعم الأسر الهشة في الأوقات الصعبة" data-fr="Soutenir les familles vulnérables dans les moments difficiles">دعم الأسر الهشة في الأوقات الصعبة</li>
+              <li data-ar="تعزيز روح التطوع لدى الشباب" data-fr="Promouvoir le bénévolat chez les jeunes">تعزيز روح التطوع لدى الشباب</li>
+              <li data-ar="تنظيم أنشطة ثقافية ورياضية" data-fr="Organiser des activités culturelles et sportives">تنظيم أنشطة ثقافية ورياضية</li>
+              <li data-ar="بناء شراكات مع المؤسسات المحلية" data-fr="Établir des partenariats avec les institutions locales">بناء شراكات مع المؤسسات المحلية</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ BOARD ══ -->
+  <section id="board" class="reveal">
+    <div class="section-header-band" data-ar="المكتب المسير" data-fr="Bureau Directeur">المكتب المسير</div>
+    <div class="board-inner">
+      <div class="board-grid">
+        <div class="board-card">
+          <div class="member-avatar" style="background:var(--blue-dark)">م</div>
+          <div class="member-name" data-ar="محمد الرحيمي" data-fr="Mohammed Rahimi">محمد الرحيمي</div>
+          <span class="member-role" data-ar="رئيس الجمعية" data-fr="Président">رئيس الجمعية</span>
+        </div>
+        <div class="board-card">
+          <div class="member-avatar" style="background:var(--red)">س</div>
+          <div class="member-name" data-ar="سعاد المراكشي" data-fr="Souad Marrakchi">سعاد المراكشي</div>
+          <span class="member-role" data-ar="نائبة الرئيس" data-fr="Vice-Présidente">نائبة الرئيس</span>
+        </div>
+        <div class="board-card">
+          <div class="member-avatar" style="background:#27ae60">ي</div>
+          <div class="member-name" data-ar="يوسف البرهومي" data-fr="Youssef Barhomi">يوسف البرهومي</div>
+          <span class="member-role" data-ar="الكاتب العام" data-fr="Secrétaire Général">الكاتب العام</span>
+        </div>
+        <div class="board-card">
+          <div class="member-avatar" style="background:#8e44ad">ز</div>
+          <div class="member-name" data-ar="زينب الحسني" data-fr="Zineb Hassani">زينب الحسني</div>
+          <span class="member-role" data-ar="أمينة المال" data-fr="Trésorière">أمينة المال</span>
+        </div>
+        <div class="board-card">
+          <div class="member-avatar" style="background:#e67e22">إ</div>
+          <div class="member-name" data-ar="إبراهيم الطاهري" data-fr="Ibrahim Tahiri">إبراهيم الطاهري</div>
+          <span class="member-role" data-ar="مستشار" data-fr="Conseiller">مستشار</span>
+        </div>
+        <div class="board-card">
+          <div class="member-avatar" style="background:#16a085">ف</div>
+          <div class="member-name" data-ar="فاطمة الزهراء" data-fr="Fatima Zahra">فاطمة الزهراء</div>
+          <span class="member-role" data-ar="عضو" data-fr="Membre">عضو</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ACTIVITIES ══ -->
+  <section id="activities" class="reveal">
+    <div class="section-header-band" data-ar="الأنشطة والفعاليات" data-fr="Activités & Événements">الأنشطة والفعاليات</div>
+    <div class="activities-inner">
+      <div class="activities-cards">
+        <div class="activity-card">
+          <div class="activity-thumb" style="background:linear-gradient(135deg,#f39c12,#e67e22)">🍱</div>
+          <div class="activity-content">
+            <div class="activity-title" data-ar="رمضان الخير" data-fr="Ramadan de la Générosité">رمضان الخير</div>
+            <span class="activity-period" data-ar="رمضان 2025" data-fr="Ramadan 2025">رمضان 2025</span>
+            <p class="activity-desc" data-ar="توزيع السلات الغذائية والوجبات الإفطارية على الأسر المحتاجة بمدينة طنجة." data-fr="Distribution de paniers alimentaires et de repas d'iftar aux familles nécessiteuses de Tanger.">
+              توزيع السلات الغذائية والوجبات الإفطارية على الأسر المحتاجة بمدينة طنجة.
+            </p>
+          </div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-thumb" style="background:linear-gradient(135deg,#e91e63,#c2185b)">👗</div>
+          <div class="activity-content">
+            <div class="activity-title" data-ar="كسوة العيد" data-fr="Vêtements de l'Aïd">كسوة العيد</div>
+            <span class="activity-period" data-ar="عيد الفطر 2025" data-fr="Aïd El Fitr 2025">عيد الفطر 2025</span>
+            <p class="activity-desc" data-ar="توزيع ملابس العيد على الأطفال من الأسر الهشة لإدخال البهجة في قلوبهم." data-fr="Distribution de vêtements de l'Aïd aux enfants des familles vulnérables pour leur apporter de la joie.">
+              توزيع ملابس العيد على الأطفال من الأسر الهشة لإدخال البهجة في قلوبهم.
+            </p>
+          </div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-thumb" style="background:linear-gradient(135deg,#2980b9,#1a6fa0)">📚</div>
+          <div class="activity-content">
+            <div class="activity-title" data-ar="العودة إلى المدرسة" data-fr="Rentrée Scolaire">العودة إلى المدرسة</div>
+            <span class="activity-period" data-ar="سبتمبر 2024" data-fr="Septembre 2024">سبتمبر 2024</span>
+            <p class="activity-desc" data-ar="توزيع الأدوات المدرسية والحقائب على التلاميذ المحتاجين لضمان انطلاقة دراسية ناجحة." data-fr="Distribution de fournitures scolaires et de cartables aux élèves dans le besoin pour une bonne rentrée.">
+              توزيع الأدوات المدرسية والحقائب على التلاميذ المحتاجين لضمان انطلاقة دراسية ناجحة.
+            </p>
+          </div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-thumb" style="background:linear-gradient(135deg,#27ae60,#2ecc71)">⚽</div>
+          <div class="activity-content">
+            <div class="activity-title" data-ar="أنشطة رياضية وترفيهية" data-fr="Activités Sportives & Loisirs">أنشطة رياضية وترفيهية</div>
+            <span class="activity-period" data-ar="صيف 2024" data-fr="Été 2024">صيف 2024</span>
+            <p class="activity-desc" data-ar="تنظيم دوريات رياضية ورحلات ترفيهية للأطفال لتعزيز روح الفريق والانتماء." data-fr="Organisation de tournois sportifs et de sorties récréatives pour les enfants afin de renforcer l'esprit d'équipe.">
+              تنظيم دوريات رياضية ورحلات ترفيهية للأطفال لتعزيز روح الفريق والانتماء.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ GALLERY ══ -->
+  <section id="gallery" class="reveal">
+    <div class="section-header-band" data-ar="معرض الصور والفيديو" data-fr="Galerie Photos & Vidéos">معرض الصور والفيديو</div>
+    <div class="gallery-inner">
+      <div class="gallery-grid">
+        <div class="gallery-item featured">
+          <div class="gallery-thumb" style="background:linear-gradient(135deg,#2980b9,#1a6fa0)">
+            <span class="g-icon">📸</span>
+            <span class="g-label" data-ar="أنشطة الجمعية" data-fr="Activités de l'association">أنشطة الجمعية</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-thumb" style="background:linear-gradient(135deg,#f39c12,#e67e22)">
+            <span class="g-icon">🤲</span>
+            <span class="g-label" data-ar="توزيع المساعدات" data-fr="Distribution d'aides">توزيع المساعدات</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-thumb" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)">
+            <span class="g-icon">📚</span>
+            <span class="g-label" data-ar="دعم التعليم" data-fr="Soutien scolaire">دعم التعليم</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-thumb" style="background:linear-gradient(135deg,#27ae60,#2ecc71)">
+            <span class="g-icon">⚽</span>
+            <span class="g-label" data-ar="أنشطة رياضية" data-fr="Activités sportives">أنشطة رياضية</span>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-thumb" style="background:linear-gradient(135deg,#16a085,#1abc9c)">
+            <span class="g-icon">🌙</span>
+            <span class="g-label" data-ar="رمضان الخير" data-fr="Ramadan Karim">رمضان الخير</span>
+          </div>
+        </div>
+      </div>
+      <p class="gallery-note" data-ar="📷 سيتم تحديث المعرض بصور وفيديوهات الأنشطة قريباً" data-fr="📷 La galerie sera bientôt mise à jour avec des photos et vidéos des activités">
+        📷 سيتم تحديث المعرض بصور وفيديوهات الأنشطة قريباً
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ PARTNERS ══ -->
+  <section id="partners" class="reveal">
+    <div class="section-header-band" data-ar="الشركاء والداعمون" data-fr="Partenaires & Soutiens">الشركاء والداعمون</div>
+    <div class="partners-inner">
+      <div class="partners-flex">
+        <div class="partner-card">
+          <span class="p-icon">🏛️</span>
+          <span class="p-name" data-ar="مؤسسة محلية" data-fr="Institution locale">مؤسسة محلية</span>
+        </div>
+        <div class="partner-card">
+          <span class="p-icon">🤝</span>
+          <span class="p-name" data-ar="جمعية شريكة" data-fr="Association partenaire">جمعية شريكة</span>
+        </div>
+        <div class="partner-card">
+          <span class="p-icon">🏫</span>
+          <span class="p-name" data-ar="مؤسسة تعليمية" data-fr="Établissement scolaire">مؤسسة تعليمية</span>
+        </div>
+        <div class="partner-card">
+          <span class="p-icon">🏥</span>
+          <span class="p-name" data-ar="جهة صحية" data-fr="Organisme de santé">جهة صحية</span>
+        </div>
+      </div>
+      <p class="partners-note" data-ar="تواصلوا معنا لاستفساء إمكانية الشراكة أو الدعم" data-fr="Contactez-nous pour toute demande de partenariat ou de soutien">
+        تواصلوا معنا لاستفساء إمكانية الشراكة أو الدعم
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ VOLUNTEER ══ -->
+  <section id="volunteer" class="reveal">
+    <div class="section-header-band" data-ar="التطوع والانخراط" data-fr="Bénévolat & Adhésion">التطوع والانخراط</div>
+    <div class="volunteer-inner">
+      <div class="volunteer-card">
+        <p class="volunteer-intro" data-ar="انضم إلى فريق بصمة الأمل وكن جزءاً من الفرق الإيجابي. سجّل بياناتك وسنتواصل معك قريباً." data-fr="Rejoignez l'équipe de Basmat Al Amal et faites partie du changement positif. Enregistrez vos informations et nous vous contacterons.">
+          انضم إلى فريق بصمة الأمل وكن جزءاً من الفرق الإيجابي. سجّل بياناتك وسنتواصل معك قريباً.
+        </p>
+        <form id="volunteer-form" onsubmit="submitVolunteer(event)">
+          <div class="form-group">
+            <label class="form-label" for="vol-name" data-ar="الاسم الكامل *" data-fr="Nom complet *">الاسم الكامل *</label>
+            <input class="form-input" type="text" id="vol-name" required placeholder="أدخل اسمك الكامل" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="vol-phone" data-ar="رقم الهاتف *" data-fr="Numéro de téléphone *">رقم الهاتف *</label>
+            <input class="form-input" type="tel" id="vol-phone" required placeholder="06XXXXXXXX" dir="ltr" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="vol-city" data-ar="المدينة" data-fr="Ville">المدينة</label>
+            <input class="form-input" type="text" id="vol-city" value="طنجة" placeholder="طنجة" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-ar="مجالات التطوع" data-fr="Domaines de bénévolat">مجالات التطوع</label>
+            <div class="checkbox-group">
+              <label class="checkbox-item"><input type="checkbox" name="interest" value="توزيع المساعدات" /><span data-ar="توزيع المساعدات" data-fr="Distribution d'aides">توزيع المساعدات</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="interest" value="دعم الأطفال" /><span data-ar="دعم الأطفال" data-fr="Soutien aux enfants">دعم الأطفال</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="interest" value="أنشطة ثقافية" /><span data-ar="أنشطة ثقافية" data-fr="Activités culturelles">أنشطة ثقافية</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="interest" value="الإدارة والتنظيم" /><span data-ar="الإدارة والتنظيم" data-fr="Administration">الإدارة والتنظيم</span></label>
+              <label class="checkbox-item"><input type="checkbox" name="interest" value="أنشطة رياضية" /><span data-ar="أنشطة رياضية" data-fr="Activités sportives">أنشطة رياضية</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="vol-avail" data-ar="أوقات التفرغ" data-fr="Disponibilité">أوقات التفرغ</label>
+            <select class="form-select" id="vol-avail">
+              <option value="نهاية الأسبوع" data-ar="نهاية الأسبوع" data-fr="Week-end">نهاية الأسبوع</option>
+              <option value="أيام الأسبوع" data-ar="أيام الأسبوع" data-fr="Jours de semaine">أيام الأسبوع</option>
+              <option value="مرن" data-ar="مرن" data-fr="Flexible">مرن</option>
+            </select>
+          </div>
+          <button type="submit" class="volunteer-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            <span data-ar="إرسال عبر واتساب" data-fr="Envoyer via WhatsApp">إرسال عبر واتساب</span>
+          </button>
+        </form>
       </div>
     </div>
   </section>
@@ -635,6 +1082,11 @@
           <div class="c-icon">📘</div>
           <h3>Facebook</h3>
           <p data-ar="جمعية بصمة الأمل" data-fr="Basmat Al Amal">جمعية بصمة الأمل</p>
+        </a>
+        <a class="contact-item" href="mailto:basmatalamal@gmail.com">
+          <div class="c-icon">✉️</div>
+          <h3 data-ar="البريد الإلكتروني" data-fr="E-mail">البريد الإلكتروني</h3>
+          <p>basmatalamal@gmail.com</p>
         </a>
       </div>
     </div>
@@ -791,6 +1243,41 @@ async function loadAbout() {
 
 loadPosts();
 loadAbout();
+
+/* ── MOBILE NAV ── */
+function toggleMobileNav() {
+  document.getElementById('mobile-nav').classList.toggle('open');
+}
+function closeMobileNav() {
+  document.getElementById('mobile-nav').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  const nav = document.getElementById('mobile-nav');
+  const btn = document.querySelector('.hamburger');
+  if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+    nav.classList.remove('open');
+  }
+});
+
+/* ── VOLUNTEER FORM ── */
+function submitVolunteer(e) {
+  e.preventDefault();
+  const name     = document.getElementById('vol-name').value.trim();
+  const phone    = document.getElementById('vol-phone').value.trim();
+  const city     = document.getElementById('vol-city').value.trim() || 'طنجة';
+  const avail    = document.getElementById('vol-avail').value;
+  const interests = [...document.querySelectorAll('input[name="interest"]:checked')]
+    .map(cb => cb.value).join('، ') || 'غير محدد';
+  const msg = encodeURIComponent(
+    `🙋 طلب تطوع جديد — جمعية بصمة الأمل\n\n` +
+    `👤 الاسم: ${name}\n` +
+    `📞 الهاتف: ${phone}\n` +
+    `🏙️ المدينة: ${city}\n` +
+    `💼 المجالات: ${interests}\n` +
+    `🕐 الأوقات المتاحة: ${avail}`
+  );
+  window.open(`https://wa.me/212645384897?text=${msg}`, '_blank');
+}
 
   </script>
 </body>
