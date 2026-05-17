@@ -580,6 +580,15 @@
     .partner-card .p-name { font-size: 0.75rem; font-weight: 600; color: var(--text-light); }
     .partners-note { text-align: center; margin-top: 1.5rem; color: var(--text-light); font-size: 0.88rem; font-style: italic; }
 
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 3rem 1.5rem; color: #b0bec5; text-align: center;
+      gap: 0.8rem; width: 100%; grid-column: 1 / -1;
+    }
+    .empty-state .es-icon { font-size: 2.8rem; opacity: 0.45; line-height: 1; }
+    .empty-state p { font-size: 0.95rem; margin: 0; font-style: italic; }
+
     /* ── VOLUNTEER ── */
     #volunteer { background: var(--bg); }
     .volunteer-inner { padding: 3.5rem 2rem; }
@@ -816,7 +825,12 @@
   <section id="board" class="reveal">
     <div class="section-header-band" data-ar="المكتب المسير" data-fr="Bureau Directeur">المكتب المسير</div>
     <div class="board-inner">
-      <div class="board-grid" id="board-grid"></div>
+      <div class="board-grid" id="board-grid">
+        <div class="empty-state">
+          <span class="es-icon">👥</span>
+          <p data-ar="لم يتم إضافة أعضاء بعد — يمكن للمشرف إضافتهم من لوحة التحكم" data-fr="Aucun membre ajouté — l'administrateur peut les ajouter depuis le panneau de gestion">لم يتم إضافة أعضاء بعد — يمكن للمشرف إضافتهم من لوحة التحكم</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -825,45 +839,9 @@
     <div class="section-header-band" data-ar="الأنشطة والفعاليات" data-fr="Activités & Événements">الأنشطة والفعاليات</div>
     <div class="activities-inner">
       <div class="activities-cards" id="activities-container">
-        <div class="activity-card">
-          <div class="activity-thumb" style="background:linear-gradient(135deg,#f39c12,#e67e22)">🍱</div>
-          <div class="activity-content">
-            <div class="activity-title" data-ar="رمضان الخير" data-fr="Ramadan de la Générosité">رمضان الخير</div>
-            <span class="activity-period" data-ar="رمضان 2025" data-fr="Ramadan 2025">رمضان 2025</span>
-            <p class="activity-desc" data-ar="توزيع السلات الغذائية والوجبات الإفطارية على الأسر المحتاجة بمدينة طنجة." data-fr="Distribution de paniers alimentaires et de repas d'iftar aux familles nécessiteuses de Tanger.">
-              توزيع السلات الغذائية والوجبات الإفطارية على الأسر المحتاجة بمدينة طنجة.
-            </p>
-          </div>
-        </div>
-        <div class="activity-card">
-          <div class="activity-thumb" style="background:linear-gradient(135deg,#e91e63,#c2185b)">👗</div>
-          <div class="activity-content">
-            <div class="activity-title" data-ar="كسوة العيد" data-fr="Vêtements de l'Aïd">كسوة العيد</div>
-            <span class="activity-period" data-ar="عيد الفطر 2025" data-fr="Aïd El Fitr 2025">عيد الفطر 2025</span>
-            <p class="activity-desc" data-ar="توزيع ملابس العيد على الأطفال من الأسر الهشة لإدخال البهجة في قلوبهم." data-fr="Distribution de vêtements de l'Aïd aux enfants des familles vulnérables pour leur apporter de la joie.">
-              توزيع ملابس العيد على الأطفال من الأسر الهشة لإدخال البهجة في قلوبهم.
-            </p>
-          </div>
-        </div>
-        <div class="activity-card">
-          <div class="activity-thumb" style="background:linear-gradient(135deg,#2980b9,#1a6fa0)">📚</div>
-          <div class="activity-content">
-            <div class="activity-title" data-ar="العودة إلى المدرسة" data-fr="Rentrée Scolaire">العودة إلى المدرسة</div>
-            <span class="activity-period" data-ar="سبتمبر 2024" data-fr="Septembre 2024">سبتمبر 2024</span>
-            <p class="activity-desc" data-ar="توزيع الأدوات المدرسية والحقائب على التلاميذ المحتاجين لضمان انطلاقة دراسية ناجحة." data-fr="Distribution de fournitures scolaires et de cartables aux élèves dans le besoin pour une bonne rentrée.">
-              توزيع الأدوات المدرسية والحقائب على التلاميذ المحتاجين لضمان انطلاقة دراسية ناجحة.
-            </p>
-          </div>
-        </div>
-        <div class="activity-card">
-          <div class="activity-thumb" style="background:linear-gradient(135deg,#27ae60,#2ecc71)">⚽</div>
-          <div class="activity-content">
-            <div class="activity-title" data-ar="أنشطة رياضية وترفيهية" data-fr="Activités Sportives & Loisirs">أنشطة رياضية وترفيهية</div>
-            <span class="activity-period" data-ar="صيف 2024" data-fr="Été 2024">صيف 2024</span>
-            <p class="activity-desc" data-ar="تنظيم دوريات رياضية ورحلات ترفيهية للأطفال لتعزيز روح الفريق والانتماء." data-fr="Organisation de tournois sportifs et de sorties récréatives pour les enfants afin de renforcer l'esprit d'équipe.">
-              تنظيم دوريات رياضية ورحلات ترفيهية للأطفال لتعزيز روح الفريق والانتماء.
-            </p>
-          </div>
+        <div class="empty-state">
+          <span class="es-icon">🎯</span>
+          <p data-ar="لم يتم إضافة أنشطة بعد — يمكن للمشرف إضافتها من لوحة التحكم" data-fr="Aucune activité ajoutée — l'administrateur peut en ajouter depuis le panneau de gestion">لم يتم إضافة أنشطة بعد — يمكن للمشرف إضافتها من لوحة التحكم</p>
         </div>
       </div>
     </div>
@@ -874,40 +852,11 @@
     <div class="section-header-band" data-ar="معرض الصور والفيديو" data-fr="Galerie Photos & Vidéos">معرض الصور والفيديو</div>
     <div class="gallery-inner">
       <div class="gallery-grid" id="gallery-grid">
-        <div class="gallery-item featured">
-          <div class="gallery-thumb" style="background:linear-gradient(135deg,#2980b9,#1a6fa0)">
-            <span class="g-icon">📸</span>
-            <span class="g-label" data-ar="أنشطة الجمعية" data-fr="Activités de l'association">أنشطة الجمعية</span>
-          </div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-thumb" style="background:linear-gradient(135deg,#f39c12,#e67e22)">
-            <span class="g-icon">🤲</span>
-            <span class="g-label" data-ar="توزيع المساعدات" data-fr="Distribution d'aides">توزيع المساعدات</span>
-          </div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-thumb" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)">
-            <span class="g-icon">📚</span>
-            <span class="g-label" data-ar="دعم التعليم" data-fr="Soutien scolaire">دعم التعليم</span>
-          </div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-thumb" style="background:linear-gradient(135deg,#27ae60,#2ecc71)">
-            <span class="g-icon">⚽</span>
-            <span class="g-label" data-ar="أنشطة رياضية" data-fr="Activités sportives">أنشطة رياضية</span>
-          </div>
-        </div>
-        <div class="gallery-item">
-          <div class="gallery-thumb" style="background:linear-gradient(135deg,#16a085,#1abc9c)">
-            <span class="g-icon">🌙</span>
-            <span class="g-label" data-ar="رمضان الخير" data-fr="Ramadan Karim">رمضان الخير</span>
-          </div>
+        <div class="empty-state">
+          <span class="es-icon">📸</span>
+          <p data-ar="لم يتم إضافة صور بعد — يمكن للمشرف إضافتها من لوحة التحكم" data-fr="Aucune photo ajoutée — l'administrateur peut en ajouter depuis le panneau de gestion">لم يتم إضافة صور بعد — يمكن للمشرف إضافتها من لوحة التحكم</p>
         </div>
       </div>
-      <p class="gallery-note" data-ar="📷 سيتم تحديث المعرض بصور وفيديوهات الأنشطة قريباً" data-fr="📷 La galerie sera bientôt mise à jour avec des photos et vidéos des activités">
-        📷 سيتم تحديث المعرض بصور وفيديوهات الأنشطة قريباً
-      </p>
     </div>
   </section>
 
@@ -915,7 +864,12 @@
   <section id="partners" class="reveal">
     <div class="section-header-band" data-ar="الشركاء والداعمون" data-fr="Partenaires & Soutiens">الشركاء والداعمون</div>
     <div class="partners-inner">
-      <div class="partners-flex" id="partners-flex"></div>
+      <div class="partners-flex" id="partners-flex">
+        <div class="empty-state">
+          <span class="es-icon">🤝</span>
+          <p data-ar="لم يتم إضافة شركاء بعد — يمكن للمشرف إضافتهم من لوحة التحكم" data-fr="Aucun partenaire ajouté — l'administrateur peut en ajouter depuis le panneau de gestion">لم يتم إضافة شركاء بعد — يمكن للمشرف إضافتهم من لوحة التحكم</p>
+        </div>
+      </div>
     </div>
   </section>
 
