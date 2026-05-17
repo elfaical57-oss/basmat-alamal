@@ -103,6 +103,25 @@
     .tab-btn { background: none; border: none; padding: 0.65rem 1.4rem; font-family: inherit; font-size: 0.95rem; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: color 0.2s, border-color 0.2s; }
     .tab-btn.active { color: var(--blue-dark); border-color: var(--blue); }
 
+    /* ── COLOR SWATCHES ── */
+    .color-swatches { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .color-swatch {
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      border: 3px solid transparent; transition: border-color 0.15s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .color-swatch.selected { border-color: #222; transform: scale(1.2); }
+
+    /* ── GRADIENT PREVIEW ── */
+    .gradient-row { display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap; }
+    .gradient-row label { font-size: 0.8rem; font-weight: 600; color: var(--blue-dark); }
+    input[type="color"] { cursor: pointer; width: 50px; height: 36px; border-radius: 6px; border: 2px solid #dde6f0; padding: 0; }
+    .gradient-preview { width: 80px; height: 50px; border-radius: 8px; }
+
+    /* ── SCROLLABLE TABS ── */
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+    .tab-btn { white-space: nowrap; flex-shrink: 0; }
+
     /* ── ABOUT FORM ── */
     .about-section-title {
       font-size: 1rem; font-weight: 700; color: var(--blue-dark);
@@ -175,8 +194,11 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" id="tab-news-btn" onclick="switchTab('news')">📰 الأخبار</button>
-      <button class="tab-btn" id="tab-about-btn" onclick="switchTab('about')">ℹ️ من نحن</button>
+      <button class="tab-btn active" id="tab-news-btn"       onclick="switchTab('news')">📰 الأخبار</button>
+      <button class="tab-btn" id="tab-about-btn"            onclick="switchTab('about')">ℹ️ من نحن</button>
+      <button class="tab-btn" id="tab-bureau-btn"           onclick="switchTab('bureau')">👥 المكتب</button>
+      <button class="tab-btn" id="tab-activities-btn"       onclick="switchTab('activities')">🎯 الأنشطة</button>
+      <button class="tab-btn" id="tab-gallery-btn"          onclick="switchTab('gallery')">🖼️ المعرض</button>
     </div>
 
     <!-- News panel -->
@@ -284,6 +306,33 @@
       </div>
     </div>
 
+    <!-- Bureau panel -->
+    <div id="tab-bureau-panel" style="display:none;">
+      <div class="dash-title">
+        <span>أعضاء المكتب المسير</span>
+        <button class="btn btn-blue" onclick="showBureauForm()">+ إضافة عضو</button>
+      </div>
+      <div class="posts-list" id="bureau-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- Activities panel -->
+    <div id="tab-activities-panel" style="display:none;">
+      <div class="dash-title">
+        <span>الأنشطة والفعاليات</span>
+        <button class="btn btn-blue" onclick="showActivityForm()">+ إضافة نشاط</button>
+      </div>
+      <div class="posts-list" id="activities-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- Gallery panel -->
+    <div id="tab-gallery-panel" style="display:none;">
+      <div class="dash-title">
+        <span>معرض الصور</span>
+        <button class="btn btn-blue" onclick="showGalleryForm()">+ إضافة صورة</button>
+      </div>
+      <div class="posts-list" id="gallery-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -321,7 +370,127 @@
     </div>
     <div class="form-actions">
       <button class="btn btn-blue" onclick="savePost()">حفظ ونشر</button>
-      <button class="btn btn-white" onclick="showDashboard()" style="border:2px solid #dde6f0;">إلغاء</button>
+      <button class="btn btn-white" onclick="showDashboard('news')" style="border:2px solid #dde6f0;">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BUREAU FORM ══ -->
+<div id="bureau-form-screen" style="display:none;">
+  <div class="form-card" style="margin-top:2rem;">
+    <h2 id="bureau-form-title">إضافة عضو جديد</h2>
+    <div class="form-row-2">
+      <div class="form-group"><label>الاسم (عربي) *</label><input type="text" id="bureau-name-ar" dir="rtl" placeholder="محمد الرحيمي" /></div>
+      <div class="form-group"><label>Nom (français)</label><input type="text" id="bureau-name-fr" dir="ltr" placeholder="Mohammed Rahimi" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>المنصب (عربي) *</label><input type="text" id="bureau-role-ar" dir="rtl" placeholder="رئيس الجمعية" /></div>
+      <div class="form-group"><label>Rôle (français)</label><input type="text" id="bureau-role-fr" dir="ltr" placeholder="Président" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group">
+        <label>حرف الأفاتار (اختياري — يُشتق من الاسم)</label>
+        <input type="text" id="bureau-initial" maxlength="2" placeholder="م" style="font-size:1.4rem;text-align:center;" />
+      </div>
+      <div class="form-group">
+        <label>الترتيب (رقم — 1 يظهر أولاً)</label>
+        <input type="number" id="bureau-sort" value="0" min="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>لون الأفاتار</label>
+      <div class="color-swatches" id="bureau-color-swatches"></div>
+      <input type="hidden" id="bureau-color" value="#1a6fa0" />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-blue" onclick="saveBureau()">💾 حفظ</button>
+      <button class="btn btn-white" onclick="showDashboard('bureau')" style="border:2px solid #dde6f0;">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACTIVITY FORM ══ -->
+<div id="activity-form-screen" style="display:none;">
+  <div class="form-card" style="margin-top:2rem;">
+    <h2 id="activity-form-title">إضافة نشاط جديد</h2>
+    <div class="form-row-2">
+      <div class="form-group"><label>العنوان (عربي) *</label><input type="text" id="act-title-ar" dir="rtl" placeholder="رمضان الخير" /></div>
+      <div class="form-group"><label>Titre (français)</label><input type="text" id="act-title-fr" dir="ltr" placeholder="Ramadan de la Générosité" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>الفترة (عربي)</label><input type="text" id="act-period-ar" dir="rtl" placeholder="رمضان 2025" /></div>
+      <div class="form-group"><label>Période (français)</label><input type="text" id="act-period-fr" dir="ltr" placeholder="Ramadan 2025" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>الوصف (عربي)</label><textarea id="act-desc-ar" rows="3" dir="rtl" placeholder="وصف النشاط…"></textarea></div>
+      <div class="form-group"><label>Description (français)</label><textarea id="act-desc-fr" rows="3" dir="ltr" placeholder="Description…"></textarea></div>
+    </div>
+    <div class="icon-row">
+      <label>الأيقونة:</label>
+      <input class="icon-input" type="text" id="act-emoji" placeholder="🎯" oninput="document.getElementById('act-emoji-preview').textContent=this.value||'🎯'" />
+      <span class="icon-preview" id="act-emoji-preview">🎯</span>
+    </div>
+    <div class="form-group">
+      <label>ألوان الخلفية</label>
+      <div class="gradient-row">
+        <div><label>من</label><input type="color" id="act-gradient-from" value="#2980b9" oninput="updateActGradient()" /></div>
+        <div><label>إلى</label><input type="color" id="act-gradient-to" value="#1a6fa0" oninput="updateActGradient()" /></div>
+        <div class="gradient-preview" id="act-gradient-preview"></div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-blue" onclick="saveActivity()">💾 حفظ</button>
+      <button class="btn btn-white" onclick="showDashboard('activities')" style="border:2px solid #dde6f0;">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GALLERY FORM ══ -->
+<div id="gallery-form-screen" style="display:none;">
+  <div class="form-card" style="margin-top:2rem;">
+    <h2 id="gallery-form-title">إضافة صورة جديدة</h2>
+    <div class="form-group">
+      <label>الصورة (انقر للرفع)</label>
+      <div class="upload-zone" id="gal-upload-zone" onclick="document.getElementById('gal-image-file').click()">
+        <div id="gal-upload-placeholder">
+          <div style="font-size:2rem;">🖼️</div>
+          <div>انقر لاختيار صورة</div>
+          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, WEBP — حجم أقصى 5MB</div>
+        </div>
+        <img id="gal-image-preview" src="" alt="" style="display:none;max-height:180px;border-radius:8px;object-fit:cover;" />
+      </div>
+      <input type="file" id="gal-image-file" accept="image/*" style="display:none" onchange="previewGalleryImage(event)" />
+    </div>
+    <div class="form-group">
+      <label>أو أدخل رابط صورة مباشرة</label>
+      <input type="url" id="gal-image-url" dir="ltr" placeholder="https://…" />
+    </div>
+    <div class="form-row-2">
+      <div class="form-group"><label>التسمية (عربي)</label><input type="text" id="gal-label-ar" dir="rtl" placeholder="توزيع المساعدات" /></div>
+      <div class="form-group"><label>Légende (français)</label><input type="text" id="gal-label-fr" dir="ltr" placeholder="Distribution d'aides" /></div>
+    </div>
+    <div class="icon-row" style="margin-bottom:0.75rem;">
+      <label>أيقونة الخلفية (إذا لم توجد صورة):</label>
+      <input class="icon-input" type="text" id="gal-emoji" placeholder="📸" oninput="document.getElementById('gal-emoji-preview').textContent=this.value||'📸'" />
+      <span class="icon-preview" id="gal-emoji-preview">📸</span>
+    </div>
+    <div class="form-group">
+      <label>ألوان الخلفية (إذا لم توجد صورة)</label>
+      <div class="gradient-row">
+        <div><label>من</label><input type="color" id="gal-gradient-from" value="#2980b9" oninput="updateGalGradient()" /></div>
+        <div><label>إلى</label><input type="color" id="gal-gradient-to" value="#1a6fa0" oninput="updateGalGradient()" /></div>
+        <div class="gradient-preview" id="gal-gradient-preview"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;">
+        <input type="checkbox" id="gal-featured" style="width:18px;height:18px;accent-color:var(--blue);" />
+        <span>عنصر بارز ⭐ (يظهر في المربع الكبير)</span>
+      </label>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-blue" onclick="saveGallery()">💾 حفظ</button>
+      <button class="btn btn-white" onclick="showDashboard('gallery')" style="border:2px solid #dde6f0;">إلغاء</button>
     </div>
   </div>
 </div>
@@ -358,23 +527,29 @@ async function enterApp() {
   document.getElementById('login-screen').style.display    = 'none';
   document.getElementById('main-header').style.display     = 'flex';
   document.getElementById('user-email-display').textContent = user.email;
-  showDashboard();
-  loadPosts();
+  showDashboard('news');
 }
 
 /* ── NAVIGATION ── */
-function showDashboard() {
-  document.getElementById('dashboard-screen').style.display  = 'block';
-  document.getElementById('post-form-screen').style.display  = 'none';
+function showDashboard(returnTab = null) {
+  document.getElementById('dashboard-screen').style.display = 'block';
+  ['post-form-screen', 'bureau-form-screen', 'activity-form-screen', 'gallery-form-screen'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (returnTab) switchTab(returnTab);
 }
 
+const ALL_TABS = ['news', 'about', 'bureau', 'activities', 'gallery'];
 function switchTab(tab) {
-  document.getElementById('tab-news-btn').classList.toggle('active', tab === 'news');
-  document.getElementById('tab-about-btn').classList.toggle('active', tab === 'about');
-  document.getElementById('tab-news-panel').style.display  = tab === 'news'  ? 'block' : 'none';
-  document.getElementById('tab-about-panel').style.display = tab === 'about' ? 'block' : 'none';
-  if (tab === 'news')  loadPosts();
-  if (tab === 'about') loadAbout();
+  ALL_TABS.forEach(t => {
+    document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t + '-panel').style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'news')       loadPosts();
+  if (tab === 'about')      loadAbout();
+  if (tab === 'bureau')     loadBureau();
+  if (tab === 'activities') loadActivities();
+  if (tab === 'gallery')    loadGallery();
 }
 
 function showPostForm(post = null) {
@@ -520,6 +695,262 @@ async function saveAbout() {
   const { error } = await sb.from('about').upsert(payload, { onConflict: 'id' });
   if (error) { showToast('حدث خطأ أثناء الحفظ'); return; }
   showToast('✓ تم حفظ قسم "من نحن" بنجاح');
+}
+
+/* ── BUREAU ── */
+const BUREAU_COLORS = ['#1a6fa0','#c0392b','#27ae60','#8e44ad','#e67e22','#16a085','#2c3e50','#e91e63'];
+let bureauEditingId = null;
+
+async function loadBureau() {
+  const list = document.getElementById('bureau-list');
+  const { data, error } = await sb.from('bureau_members').select('*').order('sort_order').order('created_at');
+  if (error || !data?.length) {
+    list.innerHTML = '<div class="empty-state">لا يوجد أعضاء بعد. أضف أول عضو!</div>';
+    return;
+  }
+  list.innerHTML = data.map(m => `
+    <div class="post-item">
+      <div class="post-item-info" style="display:flex;align-items:center;gap:1rem;">
+        <div style="width:42px;height:42px;border-radius:50%;background:${m.color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;flex-shrink:0">${m.initial || m.name_ar?.charAt(0) || '؟'}</div>
+        <div><h3>${m.name_ar}</h3><span>${m.role_ar}</span></div>
+      </div>
+      <div class="post-item-actions">
+        <button class="btn btn-blue btn-sm" onclick='showBureauForm(${JSON.stringify(m).replace(/'/g,"&#39;")})'>تعديل</button>
+        <button class="btn btn-red btn-sm" onclick="deleteBureauMember(${m.id})">حذف</button>
+      </div>
+    </div>`).join('');
+}
+
+function showBureauForm(member = null) {
+  bureauEditingId = member?.id || null;
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('bureau-form-screen').style.display = 'block';
+  document.getElementById('bureau-form-title').textContent = member ? 'تعديل عضو' : 'إضافة عضو جديد';
+  document.getElementById('bureau-name-ar').value = member?.name_ar || '';
+  document.getElementById('bureau-name-fr').value = member?.name_fr || '';
+  document.getElementById('bureau-role-ar').value = member?.role_ar || '';
+  document.getElementById('bureau-role-fr').value = member?.role_fr || '';
+  document.getElementById('bureau-initial').value = member?.initial || '';
+  document.getElementById('bureau-sort').value    = member?.sort_order ?? 0;
+  selectBureauColor(member?.color || '#1a6fa0');
+}
+
+function renderBureauColors(selected) {
+  document.getElementById('bureau-color-swatches').innerHTML = BUREAU_COLORS.map(c =>
+    `<div class="color-swatch${c === selected ? ' selected' : ''}" style="background:${c}" onclick="selectBureauColor('${c}')"></div>`
+  ).join('');
+}
+function selectBureauColor(color) {
+  document.getElementById('bureau-color').value = color;
+  renderBureauColors(color);
+}
+
+async function saveBureau() {
+  const nameAr = document.getElementById('bureau-name-ar').value.trim();
+  const roleAr = document.getElementById('bureau-role-ar').value.trim();
+  if (!nameAr || !roleAr) { showToast('يرجى ملء الاسم والمنصب'); return; }
+  const payload = {
+    name_ar:    nameAr,
+    name_fr:    document.getElementById('bureau-name-fr').value.trim() || nameAr,
+    role_ar:    roleAr,
+    role_fr:    document.getElementById('bureau-role-fr').value.trim() || roleAr,
+    initial:    document.getElementById('bureau-initial').value.trim() || nameAr.charAt(0),
+    color:      document.getElementById('bureau-color').value,
+    sort_order: parseInt(document.getElementById('bureau-sort').value) || 0,
+  };
+  const { error } = bureauEditingId
+    ? await sb.from('bureau_members').update(payload).eq('id', bureauEditingId)
+    : await sb.from('bureau_members').insert(payload);
+  if (error) { showToast('خطأ: ' + error.message); return; }
+  showToast(bureauEditingId ? '✓ تم تحديث العضو' : '✓ تمت الإضافة');
+  showDashboard('bureau');
+}
+
+async function deleteBureauMember(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا العضو؟')) return;
+  await sb.from('bureau_members').delete().eq('id', id);
+  showToast('✓ تم الحذف');
+  loadBureau();
+}
+
+/* ── ACTIVITIES ── */
+let activityEditingId = null;
+
+async function loadActivities() {
+  const list = document.getElementById('activities-list');
+  const { data, error } = await sb.from('activities').select('*').order('created_at', { ascending: false });
+  if (error || !data?.length) {
+    list.innerHTML = '<div class="empty-state">لا توجد أنشطة بعد. أضف أول نشاط!</div>';
+    return;
+  }
+  list.innerHTML = data.map(a => `
+    <div class="post-item">
+      <div class="post-item-info" style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,${a.gradient_from||'#2980b9'},${a.gradient_to||'#1a6fa0'});display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">${a.emoji||'🎯'}</div>
+        <div><h3>${a.title_ar}</h3><span>${a.period_ar||''}</span></div>
+      </div>
+      <div class="post-item-actions">
+        <button class="btn btn-blue btn-sm" onclick='showActivityForm(${JSON.stringify(a).replace(/'/g,"&#39;")})'>تعديل</button>
+        <button class="btn btn-red btn-sm" onclick="deleteActivity(${a.id})">حذف</button>
+      </div>
+    </div>`).join('');
+}
+
+function showActivityForm(activity = null) {
+  activityEditingId = activity?.id || null;
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('activity-form-screen').style.display = 'block';
+  document.getElementById('activity-form-title').textContent = activity ? 'تعديل النشاط' : 'إضافة نشاط جديد';
+  document.getElementById('act-title-ar').value     = activity?.title_ar     || '';
+  document.getElementById('act-title-fr').value     = activity?.title_fr     || '';
+  document.getElementById('act-period-ar').value    = activity?.period_ar    || '';
+  document.getElementById('act-period-fr').value    = activity?.period_fr    || '';
+  document.getElementById('act-desc-ar').value      = activity?.description_ar || '';
+  document.getElementById('act-desc-fr').value      = activity?.description_fr || '';
+  document.getElementById('act-emoji').value        = activity?.emoji        || '';
+  document.getElementById('act-emoji-preview').textContent = activity?.emoji || '🎯';
+  document.getElementById('act-gradient-from').value = activity?.gradient_from || '#2980b9';
+  document.getElementById('act-gradient-to').value   = activity?.gradient_to   || '#1a6fa0';
+  updateActGradient();
+}
+function updateActGradient() {
+  const f = document.getElementById('act-gradient-from').value;
+  const t = document.getElementById('act-gradient-to').value;
+  document.getElementById('act-gradient-preview').style.background = `linear-gradient(135deg,${f},${t})`;
+}
+
+async function saveActivity() {
+  const titleAr = document.getElementById('act-title-ar').value.trim();
+  if (!titleAr) { showToast('يرجى إدخال عنوان النشاط'); return; }
+  const payload = {
+    title_ar:       titleAr,
+    title_fr:       document.getElementById('act-title-fr').value.trim()  || titleAr,
+    period_ar:      document.getElementById('act-period-ar').value.trim(),
+    period_fr:      document.getElementById('act-period-fr').value.trim(),
+    description_ar: document.getElementById('act-desc-ar').value.trim(),
+    description_fr: document.getElementById('act-desc-fr').value.trim(),
+    emoji:          document.getElementById('act-emoji').value.trim()     || '🎯',
+    gradient_from:  document.getElementById('act-gradient-from').value,
+    gradient_to:    document.getElementById('act-gradient-to').value,
+  };
+  const { error } = activityEditingId
+    ? await sb.from('activities').update(payload).eq('id', activityEditingId)
+    : await sb.from('activities').insert(payload);
+  if (error) { showToast('خطأ: ' + error.message); return; }
+  showToast(activityEditingId ? '✓ تم التحديث' : '✓ تمت إضافة النشاط');
+  showDashboard('activities');
+}
+
+async function deleteActivity(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا النشاط؟')) return;
+  await sb.from('activities').delete().eq('id', id);
+  showToast('✓ تم الحذف');
+  loadActivities();
+}
+
+/* ── GALLERY ── */
+let galleryEditingId = null;
+
+async function loadGallery() {
+  const list = document.getElementById('gallery-list');
+  const { data, error } = await sb.from('gallery_items').select('*').order('created_at', { ascending: false });
+  if (error || !data?.length) {
+    list.innerHTML = '<div class="empty-state">لا توجد صور بعد. أضف أول صورة!</div>';
+    return;
+  }
+  list.innerHTML = data.map(g => `
+    <div class="post-item">
+      <div class="post-item-info" style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:60px;height:40px;border-radius:6px;overflow:hidden;flex-shrink:0">
+          ${g.image_url
+            ? `<img src="${g.image_url}" style="width:100%;height:100%;object-fit:cover;" />`
+            : `<div style="width:100%;height:100%;background:linear-gradient(135deg,${g.gradient_from||'#2980b9'},${g.gradient_to||'#1a6fa0'});display:flex;align-items:center;justify-content:center;">${g.emoji||'📸'}</div>`
+          }
+        </div>
+        <div>
+          <h3>${g.label_ar || '—'}${g.is_featured ? ' ⭐' : ''}</h3>
+          <span>${g.image_url ? 'صورة مرفوعة' : 'لون + أيقونة'}</span>
+        </div>
+      </div>
+      <div class="post-item-actions">
+        <button class="btn btn-blue btn-sm" onclick='showGalleryForm(${JSON.stringify(g).replace(/'/g,"&#39;")})'>تعديل</button>
+        <button class="btn btn-red btn-sm" onclick="deleteGalleryItem(${g.id})">حذف</button>
+      </div>
+    </div>`).join('');
+}
+
+function showGalleryForm(item = null) {
+  galleryEditingId = item?.id || null;
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('gallery-form-screen').style.display = 'block';
+  document.getElementById('gallery-form-title').textContent = item ? 'تعديل الصورة' : 'إضافة صورة جديدة';
+  document.getElementById('gal-label-ar').value     = item?.label_ar    || '';
+  document.getElementById('gal-label-fr').value     = item?.label_fr    || '';
+  document.getElementById('gal-emoji').value        = item?.emoji       || '';
+  document.getElementById('gal-emoji-preview').textContent = item?.emoji || '📸';
+  document.getElementById('gal-featured').checked   = item?.is_featured || false;
+  document.getElementById('gal-gradient-from').value = item?.gradient_from || '#2980b9';
+  document.getElementById('gal-gradient-to').value   = item?.gradient_to   || '#1a6fa0';
+  document.getElementById('gal-image-url').value    = item?.image_url   || '';
+  document.getElementById('gal-image-file').value   = '';
+  const preview = document.getElementById('gal-image-preview');
+  const placeholder = document.getElementById('gal-upload-placeholder');
+  const zone = document.getElementById('gal-upload-zone');
+  if (item?.image_url) {
+    preview.src = item.image_url; preview.style.display = 'block';
+    placeholder.style.display = 'none'; zone.classList.add('has-image');
+  } else {
+    preview.src = ''; preview.style.display = 'none';
+    placeholder.style.display = 'block'; zone.classList.remove('has-image');
+  }
+  updateGalGradient();
+}
+function updateGalGradient() {
+  const f = document.getElementById('gal-gradient-from').value;
+  const t = document.getElementById('gal-gradient-to').value;
+  document.getElementById('gal-gradient-preview').style.background = `linear-gradient(135deg,${f},${t})`;
+}
+function previewGalleryImage(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const preview = document.getElementById('gal-image-preview');
+  preview.src = URL.createObjectURL(file); preview.style.display = 'block';
+  document.getElementById('gal-upload-placeholder').style.display = 'none';
+  document.getElementById('gal-upload-zone').classList.add('has-image');
+}
+
+async function saveGallery() {
+  let imageUrl = document.getElementById('gal-image-url').value.trim() || null;
+  const fileInput = document.getElementById('gal-image-file');
+  if (fileInput.files[0]) {
+    const ext = fileInput.files[0].name.split('.').pop();
+    const path = `gallery/${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from('images').upload(path, fileInput.files[0], { upsert: true });
+    if (upErr) { showToast('فشل رفع الصورة: ' + upErr.message); return; }
+    const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
+    imageUrl = publicUrl;
+  }
+  const payload = {
+    label_ar:      document.getElementById('gal-label-ar').value.trim(),
+    label_fr:      document.getElementById('gal-label-fr').value.trim(),
+    emoji:         document.getElementById('gal-emoji').value.trim()    || '📸',
+    is_featured:   document.getElementById('gal-featured').checked,
+    gradient_from: document.getElementById('gal-gradient-from').value,
+    gradient_to:   document.getElementById('gal-gradient-to').value,
+    image_url:     imageUrl,
+  };
+  const { error } = galleryEditingId
+    ? await sb.from('gallery_items').update(payload).eq('id', galleryEditingId)
+    : await sb.from('gallery_items').insert(payload);
+  if (error) { showToast('خطأ: ' + error.message); return; }
+  showToast(galleryEditingId ? '✓ تم التحديث' : '✓ تمت إضافة الصورة');
+  showDashboard('gallery');
+}
+
+async function deleteGalleryItem(id) {
+  if (!confirm('هل أنت متأكد من الحذف؟')) return;
+  await sb.from('gallery_items').delete().eq('id', id);
+  showToast('✓ تم الحذف');
+  loadGallery();
 }
 
 /* ── INIT ── */

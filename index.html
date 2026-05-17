@@ -787,7 +787,7 @@
   <section id="board" class="reveal">
     <div class="section-header-band" data-ar="المكتب المسير" data-fr="Bureau Directeur">المكتب المسير</div>
     <div class="board-inner">
-      <div class="board-grid">
+      <div class="board-grid" id="board-grid">
         <div class="board-card">
           <div class="member-avatar" style="background:var(--blue-dark)">م</div>
           <div class="member-name" data-ar="محمد الرحيمي" data-fr="Mohammed Rahimi">محمد الرحيمي</div>
@@ -826,7 +826,7 @@
   <section id="activities" class="reveal">
     <div class="section-header-band" data-ar="الأنشطة والفعاليات" data-fr="Activités & Événements">الأنشطة والفعاليات</div>
     <div class="activities-inner">
-      <div class="activities-cards">
+      <div class="activities-cards" id="activities-container">
         <div class="activity-card">
           <div class="activity-thumb" style="background:linear-gradient(135deg,#f39c12,#e67e22)">🍱</div>
           <div class="activity-content">
@@ -875,7 +875,7 @@
   <section id="gallery" class="reveal">
     <div class="section-header-band" data-ar="معرض الصور والفيديو" data-fr="Galerie Photos & Vidéos">معرض الصور والفيديو</div>
     <div class="gallery-inner">
-      <div class="gallery-grid">
+      <div class="gallery-grid" id="gallery-grid">
         <div class="gallery-item featured">
           <div class="gallery-thumb" style="background:linear-gradient(135deg,#2980b9,#1a6fa0)">
             <span class="g-icon">📸</span>
@@ -1243,6 +1243,82 @@ async function loadAbout() {
 
 loadPosts();
 loadAbout();
+
+/* ── DYNAMIC BUREAU ── */
+async function loadBureauSection() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/bureau_members?select=*&order=sort_order.asc,created_at.asc`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+    const grid = document.getElementById('board-grid');
+    grid.innerHTML = data.map(m => {
+      const name = currentLang === 'fr' ? (m.name_fr || m.name_ar) : m.name_ar;
+      const role = currentLang === 'fr' ? (m.role_fr || m.role_ar) : m.role_ar;
+      return `<div class="board-card">
+        <div class="member-avatar" style="background:${m.color || 'var(--blue-dark)'}">
+          ${m.initial || m.name_ar?.charAt(0) || '؟'}
+        </div>
+        <div class="member-name" data-ar="${m.name_ar}" data-fr="${m.name_fr || m.name_ar}">${name}</div>
+        <span class="member-role" data-ar="${m.role_ar}" data-fr="${m.role_fr || m.role_ar}">${role}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+/* ── DYNAMIC ACTIVITIES ── */
+async function loadActivitiesSection() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/activities?select=*&order=created_at.asc`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+    const container = document.getElementById('activities-container');
+    container.innerHTML = data.map(a => {
+      const title = currentLang === 'fr' ? (a.title_fr || a.title_ar) : a.title_ar;
+      const period = currentLang === 'fr' ? (a.period_fr || a.period_ar || '') : (a.period_ar || '');
+      const desc = currentLang === 'fr' ? (a.description_fr || a.description_ar || '') : (a.description_ar || '');
+      return `<div class="activity-card">
+        <div class="activity-thumb" style="background:linear-gradient(135deg,${a.gradient_from||'#2980b9'},${a.gradient_to||'#1a6fa0'})">${a.emoji||'🎯'}</div>
+        <div class="activity-content">
+          <div class="activity-title" data-ar="${a.title_ar}" data-fr="${a.title_fr||a.title_ar}">${title}</div>
+          <span class="activity-period" data-ar="${a.period_ar||''}" data-fr="${a.period_fr||a.period_ar||''}">${period}</span>
+          <p class="activity-desc" data-ar="${a.description_ar||''}" data-fr="${a.description_fr||a.description_ar||''}">${desc}</p>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+/* ── DYNAMIC GALLERY ── */
+async function loadGallerySection() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/gallery_items?select=*&order=is_featured.desc,created_at.asc`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = data.map(g => {
+      const label = currentLang === 'fr' ? (g.label_fr || g.label_ar || '') : (g.label_ar || '');
+      return `<div class="gallery-item${g.is_featured ? ' featured' : ''}">
+        ${g.image_url
+          ? `<img src="${g.image_url}" alt="${g.label_ar||''}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy" />`
+          : `<div class="gallery-thumb" style="background:linear-gradient(135deg,${g.gradient_from||'#2980b9'},${g.gradient_to||'#1a6fa0'})">
+              <span class="g-icon">${g.emoji||'📸'}</span>
+              <span class="g-label" data-ar="${g.label_ar||''}" data-fr="${g.label_fr||g.label_ar||''}">${label}</span>
+            </div>`
+        }
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+loadBureauSection();
+loadActivitiesSection();
+loadGallerySection();
 
 /* ── MOBILE NAV ── */
 function toggleMobileNav() {
