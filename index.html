@@ -915,27 +915,7 @@
   <section id="partners" class="reveal">
     <div class="section-header-band" data-ar="الشركاء والداعمون" data-fr="Partenaires & Soutiens">الشركاء والداعمون</div>
     <div class="partners-inner">
-      <div class="partners-flex">
-        <div class="partner-card">
-          <span class="p-icon">🏛️</span>
-          <span class="p-name" data-ar="مؤسسة محلية" data-fr="Institution locale">مؤسسة محلية</span>
-        </div>
-        <div class="partner-card">
-          <span class="p-icon">🤝</span>
-          <span class="p-name" data-ar="جمعية شريكة" data-fr="Association partenaire">جمعية شريكة</span>
-        </div>
-        <div class="partner-card">
-          <span class="p-icon">🏫</span>
-          <span class="p-name" data-ar="مؤسسة تعليمية" data-fr="Établissement scolaire">مؤسسة تعليمية</span>
-        </div>
-        <div class="partner-card">
-          <span class="p-icon">🏥</span>
-          <span class="p-name" data-ar="جهة صحية" data-fr="Organisme de santé">جهة صحية</span>
-        </div>
-      </div>
-      <p class="partners-note" data-ar="تواصلوا معنا لاستفساء إمكانية الشراكة أو الدعم" data-fr="Contactez-nous pour toute demande de partenariat ou de soutien">
-        تواصلوا معنا لاستفساء إمكانية الشراكة أو الدعم
-      </p>
+      <div class="partners-flex" id="partners-flex"></div>
     </div>
   </section>
 
@@ -1305,6 +1285,30 @@ async function loadGallerySection() {
 loadBureauSection();
 loadActivitiesSection();
 loadGallerySection();
+
+/* ── DYNAMIC PARTNERS ── */
+async function loadPartnersSection() {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/partners?select=*&order=created_at.asc`, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+    const flex = document.getElementById('partners-flex');
+    flex.innerHTML = data.map(p => {
+      const name = currentLang === 'fr' ? (p.name_fr || p.name_ar || '') : (p.name_ar || '');
+      const inner = p.logo_url
+        ? `<img src="${p.logo_url}" alt="${p.name_ar || ''}" style="max-width:100%;max-height:52px;object-fit:contain;" />`
+        : `<span class="p-icon">${p.emoji || '🤝'}</span>`;
+      const card = `<div class="partner-card" style="${p.website_url ? 'cursor:pointer;' : ''}" ${p.website_url ? `onclick="window.open('${p.website_url}','_blank')"` : ''}>
+        ${inner}
+        <span class="p-name">${name}</span>
+      </div>`;
+      return card;
+    }).join('');
+  } catch(e) {}
+}
+loadPartnersSection();
 
 /* ── MOBILE NAV ── */
 function toggleMobileNav() {

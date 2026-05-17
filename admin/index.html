@@ -199,6 +199,7 @@
       <button class="tab-btn" id="tab-bureau-btn"           onclick="switchTab('bureau')">👥 المكتب</button>
       <button class="tab-btn" id="tab-activities-btn"       onclick="switchTab('activities')">🎯 الأنشطة</button>
       <button class="tab-btn" id="tab-gallery-btn"          onclick="switchTab('gallery')">🖼️ المعرض</button>
+      <button class="tab-btn" id="tab-partners-btn"         onclick="switchTab('partners')">🤝 الشركاء</button>
     </div>
 
     <!-- News panel -->
@@ -331,6 +332,15 @@
         <button class="btn btn-blue" onclick="showGalleryForm()">+ إضافة صورة</button>
       </div>
       <div class="posts-list" id="gallery-list"><div class="empty-state">جاري التحميل…</div></div>
+    </div>
+
+    <!-- Partners panel -->
+    <div id="tab-partners-panel" style="display:none;">
+      <div class="dash-title">
+        <span>الشركاء والداعمون</span>
+        <button class="btn btn-blue" onclick="showPartnerForm()">+ إضافة شريك</button>
+      </div>
+      <div class="posts-list" id="partners-list"><div class="empty-state">جاري التحميل…</div></div>
     </div>
 
   </div>
@@ -495,6 +505,46 @@
   </div>
 </div>
 
+<!-- ══ PARTNER FORM ══ -->
+<div id="partner-form-screen" style="display:none;">
+  <div class="form-card" style="margin-top:2rem;">
+    <h2 id="partner-form-title">إضافة شريك جديد</h2>
+    <div class="form-row-2">
+      <div class="form-group"><label>الاسم (عربي) *</label><input type="text" id="part-name-ar" dir="rtl" placeholder="جمعية شريكة" /></div>
+      <div class="form-group"><label>Nom (français)</label><input type="text" id="part-name-fr" dir="ltr" placeholder="Association partenaire" /></div>
+    </div>
+    <div class="form-group">
+      <label>شعار الشريك (انقر للرفع)</label>
+      <div class="upload-zone" id="part-upload-zone" onclick="document.getElementById('part-logo-file').click()">
+        <div id="part-upload-placeholder">
+          <div style="font-size:2rem;">🖼️</div>
+          <div>انقر لاختيار الشعار</div>
+          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, SVG, WEBP</div>
+        </div>
+        <img id="part-logo-preview" src="" alt="" style="display:none;max-height:100px;border-radius:8px;object-fit:contain;" />
+      </div>
+      <input type="file" id="part-logo-file" accept="image/*" style="display:none" onchange="previewPartnerLogo(event)" />
+    </div>
+    <div class="form-group">
+      <label>أو أدخل رابط الشعار مباشرة</label>
+      <input type="url" id="part-logo-url" dir="ltr" placeholder="https://…" />
+    </div>
+    <div class="icon-row" style="margin-bottom:0.75rem;">
+      <label>أيقونة بديلة (إذا لم يوجد شعار):</label>
+      <input class="icon-input" type="text" id="part-emoji" placeholder="🤝" oninput="document.getElementById('part-emoji-preview').textContent=this.value||'🤝'" />
+      <span class="icon-preview" id="part-emoji-preview">🤝</span>
+    </div>
+    <div class="form-group">
+      <label>رابط الموقع (اختياري)</label>
+      <input type="url" id="part-website" dir="ltr" placeholder="https://…" />
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-blue" onclick="savePartner()">💾 حفظ</button>
+      <button class="btn btn-white" onclick="showDashboard('partners')" style="border:2px solid #dde6f0;">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -533,13 +583,13 @@ async function enterApp() {
 /* ── NAVIGATION ── */
 function showDashboard(returnTab = null) {
   document.getElementById('dashboard-screen').style.display = 'block';
-  ['post-form-screen', 'bureau-form-screen', 'activity-form-screen', 'gallery-form-screen'].forEach(id => {
+  ['post-form-screen', 'bureau-form-screen', 'activity-form-screen', 'gallery-form-screen', 'partner-form-screen'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
   if (returnTab) switchTab(returnTab);
 }
 
-const ALL_TABS = ['news', 'about', 'bureau', 'activities', 'gallery'];
+const ALL_TABS = ['news', 'about', 'bureau', 'activities', 'gallery', 'partners'];
 function switchTab(tab) {
   ALL_TABS.forEach(t => {
     document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
@@ -550,6 +600,7 @@ function switchTab(tab) {
   if (tab === 'bureau')     loadBureau();
   if (tab === 'activities') loadActivities();
   if (tab === 'gallery')    loadGallery();
+  if (tab === 'partners')   loadPartners();
 }
 
 function showPostForm(post = null) {
@@ -951,6 +1002,103 @@ async function deleteGalleryItem(id) {
   await sb.from('gallery_items').delete().eq('id', id);
   showToast('✓ تم الحذف');
   loadGallery();
+}
+
+/* ── PARTNERS ── */
+let partnerEditingId = null;
+
+async function loadPartners() {
+  const list = document.getElementById('partners-list');
+  const { data, error } = await sb.from('partners').select('*').order('created_at');
+  if (error || !data?.length) {
+    list.innerHTML = '<div class="empty-state">لا يوجد شركاء بعد. أضف أول شريك!</div>';
+    return;
+  }
+  list.innerHTML = data.map(p => `
+    <div class="post-item">
+      <div class="post-item-info" style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:52px;height:40px;border-radius:6px;border:1px solid #dde6f0;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;background:#f8fbfe;">
+          ${p.logo_url
+            ? `<img src="${p.logo_url}" style="max-width:100%;max-height:100%;object-fit:contain;" />`
+            : `<span style="font-size:1.4rem;">${p.emoji || '🤝'}</span>`}
+        </div>
+        <div>
+          <h3>${p.name_ar || '—'}</h3>
+          <span>${p.name_fr || ''}</span>
+        </div>
+      </div>
+      <div class="post-item-actions">
+        <button class="btn btn-blue btn-sm" onclick='showPartnerForm(${JSON.stringify(p).replace(/'/g,"&#39;")})'>تعديل</button>
+        <button class="btn btn-red btn-sm" onclick="deletePartner(${p.id})">حذف</button>
+      </div>
+    </div>`).join('');
+}
+
+function showPartnerForm(partner = null) {
+  partnerEditingId = partner?.id || null;
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('partner-form-screen').style.display = 'block';
+  document.getElementById('partner-form-title').textContent = partner ? 'تعديل الشريك' : 'إضافة شريك جديد';
+  document.getElementById('part-name-ar').value  = partner?.name_ar  || '';
+  document.getElementById('part-name-fr').value  = partner?.name_fr  || '';
+  document.getElementById('part-logo-url').value = partner?.logo_url || '';
+  document.getElementById('part-emoji').value    = partner?.emoji    || '';
+  document.getElementById('part-emoji-preview').textContent = partner?.emoji || '🤝';
+  document.getElementById('part-website').value  = partner?.website_url || '';
+  document.getElementById('part-logo-file').value = '';
+  const preview = document.getElementById('part-logo-preview');
+  const placeholder = document.getElementById('part-upload-placeholder');
+  const zone = document.getElementById('part-upload-zone');
+  if (partner?.logo_url) {
+    preview.src = partner.logo_url; preview.style.display = 'block';
+    placeholder.style.display = 'none'; zone.classList.add('has-image');
+  } else {
+    preview.src = ''; preview.style.display = 'none';
+    placeholder.style.display = 'block'; zone.classList.remove('has-image');
+  }
+}
+
+function previewPartnerLogo(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const preview = document.getElementById('part-logo-preview');
+  preview.src = URL.createObjectURL(file); preview.style.display = 'block';
+  document.getElementById('part-upload-placeholder').style.display = 'none';
+  document.getElementById('part-upload-zone').classList.add('has-image');
+}
+
+async function savePartner() {
+  const nameAr = document.getElementById('part-name-ar').value.trim();
+  if (!nameAr) { showToast('يرجى إدخال اسم الشريك'); return; }
+  let logoUrl = document.getElementById('part-logo-url').value.trim() || null;
+  const fileInput = document.getElementById('part-logo-file');
+  if (fileInput.files[0]) {
+    const ext = fileInput.files[0].name.split('.').pop();
+    const path = `partners/${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from('images').upload(path, fileInput.files[0], { upsert: true });
+    if (upErr) { showToast('فشل رفع الشعار: ' + upErr.message); return; }
+    const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
+    logoUrl = publicUrl;
+  }
+  const payload = {
+    name_ar:     nameAr,
+    name_fr:     document.getElementById('part-name-fr').value.trim() || nameAr,
+    logo_url:    logoUrl,
+    emoji:       document.getElementById('part-emoji').value.trim() || '🤝',
+    website_url: document.getElementById('part-website').value.trim() || null,
+  };
+  const { error } = partnerEditingId
+    ? await sb.from('partners').update(payload).eq('id', partnerEditingId)
+    : await sb.from('partners').insert(payload);
+  if (error) { showToast('خطأ: ' + error.message); return; }
+  showToast(partnerEditingId ? '✓ تم التحديث' : '✓ تمت إضافة الشريك');
+  showDashboard('partners');
+}
+
+async function deletePartner(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا الشريك؟')) return;
+  await sb.from('partners').delete().eq('id', id);
+  showToast('✓ تم الحذف');
+  loadPartners();
 }
 
 /* ── INIT ── */
