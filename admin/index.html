@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة الإدارة — جمعية بصمة الأمل</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -360,23 +359,8 @@
       <textarea id="post-content" placeholder="اكتب محتوى الخبر هنا…"></textarea>
     </div>
     <div class="form-group">
-      <label>الصورة (اختياري)</label>
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('image-file').click()">
-        <div id="upload-placeholder">
-          <div style="font-size:2rem;">📷</div>
-          <div>انقر لاختيار صورة</div>
-          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, WEBP — حجم أقصى 5MB</div>
-        </div>
-        <img id="image-preview" src="" alt="" style="display:none;max-height:180px;border-radius:8px;object-fit:cover;" />
-      </div>
-      <input type="file" id="image-file" accept="image/*" style="display:none" onchange="previewImage(event)" />
-      <input type="hidden" id="post-image" />
-      <div id="upload-progress" style="display:none; margin-top:0.5rem;">
-        <div style="background:#dde6f0;border-radius:4px;height:6px;">
-          <div id="progress-bar" style="background:var(--blue);height:6px;border-radius:4px;width:0%;transition:width 0.3s;"></div>
-        </div>
-        <div style="font-size:0.8rem;color:var(--blue);margin-top:0.25rem;">جاري رفع الصورة…</div>
-      </div>
+      <label>رابط الصورة (اختياري)</label>
+      <input type="url" id="post-image" dir="ltr" placeholder="https://…" class="form-group input" style="width:100%;padding:0.65rem 0.9rem;border:2px solid #dde6f0;border-radius:var(--radius);font-family:inherit;font-size:0.95rem;outline:none;" />
     </div>
     <div class="form-actions">
       <button class="btn btn-blue" onclick="savePost()">حفظ ونشر</button>
@@ -460,19 +444,7 @@
   <div class="form-card" style="margin-top:2rem;">
     <h2 id="gallery-form-title">إضافة صورة جديدة</h2>
     <div class="form-group">
-      <label>الصورة (انقر للرفع)</label>
-      <div class="upload-zone" id="gal-upload-zone" onclick="document.getElementById('gal-image-file').click()">
-        <div id="gal-upload-placeholder">
-          <div style="font-size:2rem;">🖼️</div>
-          <div>انقر لاختيار صورة</div>
-          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, WEBP — حجم أقصى 5MB</div>
-        </div>
-        <img id="gal-image-preview" src="" alt="" style="display:none;max-height:180px;border-radius:8px;object-fit:cover;" />
-      </div>
-      <input type="file" id="gal-image-file" accept="image/*" style="display:none" onchange="previewGalleryImage(event)" />
-    </div>
-    <div class="form-group">
-      <label>أو أدخل رابط صورة مباشرة</label>
+      <label>رابط الصورة</label>
       <input type="url" id="gal-image-url" dir="ltr" placeholder="https://…" />
     </div>
     <div class="form-row-2">
@@ -514,19 +486,7 @@
       <div class="form-group"><label>Nom (français)</label><input type="text" id="part-name-fr" dir="ltr" placeholder="Association partenaire" /></div>
     </div>
     <div class="form-group">
-      <label>شعار الشريك (انقر للرفع)</label>
-      <div class="upload-zone" id="part-upload-zone" onclick="document.getElementById('part-logo-file').click()">
-        <div id="part-upload-placeholder">
-          <div style="font-size:2rem;">🖼️</div>
-          <div>انقر لاختيار الشعار</div>
-          <div style="font-size:0.78rem;opacity:0.6;">JPG, PNG, SVG, WEBP</div>
-        </div>
-        <img id="part-logo-preview" src="" alt="" style="display:none;max-height:100px;border-radius:8px;object-fit:contain;" />
-      </div>
-      <input type="file" id="part-logo-file" accept="image/*" style="display:none" onchange="previewPartnerLogo(event)" />
-    </div>
-    <div class="form-group">
-      <label>أو أدخل رابط الشعار مباشرة</label>
+      <label>رابط الشعار</label>
       <input type="url" id="part-logo-url" dir="ltr" placeholder="https://…" />
     </div>
     <div class="icon-row" style="margin-bottom:0.75rem;">
@@ -548,37 +508,51 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://yyjbcduakapgblcgqieq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_SQxTQ9a2HcskaUmAgFOVrw_qAvbIZlx';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 /* ── AUTH ── */
+function getToken() { return localStorage.getItem('admin_token'); }
+function getAuthHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() };
+}
+
 async function doLogin() {
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl    = document.getElementById('login-error');
   errEl.textContent = '';
-  const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) { errEl.textContent = 'بريد إلكتروني أو كلمة مرور خاطئة.'; return; }
-  enterApp();
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || 'بريد إلكتروني أو كلمة مرور خاطئة.'; return; }
+    localStorage.setItem('admin_token', data.token);
+    localStorage.setItem('admin_email', data.email);
+    enterApp(data.email);
+  } catch { errEl.textContent = 'تعذر الاتصال بالخادم.'; }
 }
 
-async function doLogout() {
-  await sb.auth.signOut();
+function doLogout() {
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_email');
   document.getElementById('login-screen').style.display    = 'flex';
   document.getElementById('main-header').style.display     = 'none';
   document.getElementById('dashboard-screen').style.display = 'none';
   document.getElementById('post-form-screen').style.display = 'none';
 }
 
-async function enterApp() {
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return;
+function enterApp(email) {
   document.getElementById('login-screen').style.display    = 'none';
   document.getElementById('main-header').style.display     = 'flex';
-  document.getElementById('user-email-display').textContent = user.email;
+  document.getElementById('user-email-display').textContent = email || localStorage.getItem('admin_email') || '';
   showDashboard('news');
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const token = getToken();
+  if (token) enterApp();
+});
 
 /* ── NAVIGATION ── */
 function showDashboard(returnTab = null) {
@@ -611,25 +585,14 @@ function showPostForm(post = null) {
   document.getElementById('post-title').value   = post ? post.title : '';
   document.getElementById('post-content').value = post ? post.content : '';
   document.getElementById('post-image').value   = post ? (post.image_url || '') : '';
-  document.getElementById('image-file').value   = '';
-  const preview = document.getElementById('image-preview');
-  const zone    = document.getElementById('upload-zone');
-  if (post && post.image_url) {
-    preview.src = post.image_url; preview.style.display = 'block';
-    document.getElementById('upload-placeholder').style.display = 'none';
-    zone.classList.add('has-image');
-  } else {
-    preview.src = ''; preview.style.display = 'none';
-    document.getElementById('upload-placeholder').style.display = 'block';
-    zone.classList.remove('has-image');
-  }
 }
 
-/* ── CRUD ── */
+/* ── CRUD: POSTS ── */
 async function loadPosts() {
   const list = document.getElementById('posts-list');
-  const { data, error } = await sb.from('posts').select('*').order('created_at', { ascending: false });
-  if (error || !data.length) {
+  const res = await fetch('/api/posts');
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) {
     list.innerHTML = '<div class="empty-state">لا توجد أخبار بعد. أضف أول خبر!</div>';
     return;
   }
@@ -641,10 +604,9 @@ async function loadPosts() {
       </div>
       <div class="post-item-actions">
         <button class="btn btn-blue btn-sm" onclick='editPost(${JSON.stringify(p).replace(/'/g,"&#39;")})'>تعديل</button>
-        <button class="btn btn-red btn-sm"  onclick="deletePost('${p.id}')">حذف</button>
+        <button class="btn btn-red btn-sm" onclick="deletePost('${p.id}')">حذف</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 async function savePost() {
@@ -652,28 +614,24 @@ async function savePost() {
   const title   = document.getElementById('post-title').value.trim();
   const content = document.getElementById('post-content').value.trim();
   if (!title || !content) { showToast('يرجى ملء العنوان والمحتوى'); return; }
-
-  let imageUrl = document.getElementById('post-image').value.trim() || null;
-  const fileInput = document.getElementById('image-file');
-  if (fileInput.files[0]) {
-    imageUrl = await uploadImage(fileInput.files[0]);
-    if (!imageUrl) return;
-  }
-
-  const payload = { title, content, image_url: imageUrl };
-  const { error } = id
-    ? await sb.from('posts').update(payload).eq('id', id)
-    : await sb.from('posts').insert(payload);
-  if (error) { showToast('حدث خطأ، يرجى المحاولة مرة أخرى'); return; }
+  const image_url = document.getElementById('post-image').value.trim() || null;
+  const payload = { title, content, image_url };
+  const res = await fetch(id ? `/api/posts?id=${id}` : '/api/posts', {
+    method: id ? 'PUT' : 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload)
+  });
+  if (res.status === 401) { showToast('انتهت الجلسة، يرجى تسجيل الدخول'); doLogout(); return; }
+  if (!res.ok) { showToast('حدث خطأ، يرجى المحاولة مرة أخرى'); return; }
   showToast(id ? '✓ تم تحديث الخبر' : '✓ تم نشر الخبر بنجاح');
-  showDashboard();
+  showDashboard('news');
 }
 
 function editPost(post) { showPostForm(post); }
 
 async function deletePost(id) {
   if (!confirm('هل أنت متأكد من حذف هذا الخبر؟')) return;
-  await sb.from('posts').delete().eq('id', id);
+  await fetch(`/api/posts?id=${id}`, { method: 'DELETE', headers: getAuthHeaders() });
   showToast('✓ تم حذف الخبر');
   loadPosts();
 }
@@ -685,40 +643,13 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-/* ── IMAGE UPLOAD ── */
-function previewImage(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const preview = document.getElementById('image-preview');
-  const placeholder = document.getElementById('upload-placeholder');
-  const zone = document.getElementById('upload-zone');
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
-  placeholder.style.display = 'none';
-  zone.classList.add('has-image');
-}
-
-async function uploadImage(file) {
-  const ext = file.name.split('.').pop();
-  const path = `posts/${Date.now()}.${ext}`;
-  const progress = document.getElementById('upload-progress');
-  const bar = document.getElementById('progress-bar');
-  progress.style.display = 'block';
-  bar.style.width = '30%';
-  const { data, error } = await sb.storage.from('images').upload(path, file, { upsert: true });
-  bar.style.width = '100%';
-  setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 800);
-  if (error) { showToast('فشل رفع الصورة: ' + error.message); console.error('Upload error:', error); return null; }
-  const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
-  return publicUrl;
-}
-
 /* ── ABOUT ── */
 async function loadAbout() {
-  const { data, error } = await sb.from('about').select('*').eq('id', 1).single();
-  if (error || !data) return;
-  document.getElementById('about-text-ar').value  = data.text_ar  || '';
-  document.getElementById('about-text-fr').value  = data.text_fr  || '';
+  const res = await fetch('/api/about');
+  const data = await res.json();
+  if (!data || !data.id) return;
+  document.getElementById('about-text-ar').value = data.text_ar || '';
+  document.getElementById('about-text-fr').value = data.text_fr || '';
   [1, 2, 3, 4].forEach(n => {
     const icon = data['card' + n + '_icon'] || '';
     document.getElementById('card' + n + '-icon').value = icon;
@@ -732,7 +663,6 @@ async function loadAbout() {
 
 async function saveAbout() {
   const payload = {
-    id: 1,
     text_ar: document.getElementById('about-text-ar').value.trim(),
     text_fr: document.getElementById('about-text-fr').value.trim(),
   };
@@ -743,8 +673,8 @@ async function saveAbout() {
     payload['card' + n + '_text_ar']  = document.getElementById('card' + n + '-text-ar').value.trim();
     payload['card' + n + '_text_fr']  = document.getElementById('card' + n + '-text-fr').value.trim();
   });
-  const { error } = await sb.from('about').upsert(payload, { onConflict: 'id' });
-  if (error) { showToast('حدث خطأ أثناء الحفظ'); return; }
+  const res = await fetch('/api/about', { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload) });
+  if (!res.ok) { showToast('حدث خطأ أثناء الحفظ'); return; }
   showToast('✓ تم حفظ قسم "من نحن" بنجاح');
 }
 
@@ -754,8 +684,9 @@ let bureauEditingId = null;
 
 async function loadBureau() {
   const list = document.getElementById('bureau-list');
-  const { data, error } = await sb.from('bureau_members').select('*').order('sort_order').order('created_at');
-  if (error || !data?.length) {
+  const res = await fetch('/api/bureau');
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) {
     list.innerHTML = '<div class="empty-state">لا يوجد أعضاء بعد. أضف أول عضو!</div>';
     return;
   }
@@ -801,25 +732,23 @@ async function saveBureau() {
   const roleAr = document.getElementById('bureau-role-ar').value.trim();
   if (!nameAr || !roleAr) { showToast('يرجى ملء الاسم والمنصب'); return; }
   const payload = {
-    name_ar:    nameAr,
-    name_fr:    document.getElementById('bureau-name-fr').value.trim() || nameAr,
-    role_ar:    roleAr,
-    role_fr:    document.getElementById('bureau-role-fr').value.trim() || roleAr,
-    initial:    document.getElementById('bureau-initial').value.trim() || nameAr.charAt(0),
-    color:      document.getElementById('bureau-color').value,
+    name_ar: nameAr, name_fr: document.getElementById('bureau-name-fr').value.trim() || nameAr,
+    role_ar: roleAr, role_fr: document.getElementById('bureau-role-fr').value.trim() || roleAr,
+    initial: document.getElementById('bureau-initial').value.trim() || nameAr.charAt(0),
+    color: document.getElementById('bureau-color').value,
     sort_order: parseInt(document.getElementById('bureau-sort').value) || 0,
   };
-  const { error } = bureauEditingId
-    ? await sb.from('bureau_members').update(payload).eq('id', bureauEditingId)
-    : await sb.from('bureau_members').insert(payload);
-  if (error) { showToast('خطأ: ' + error.message); return; }
+  const res = await fetch(bureauEditingId ? `/api/bureau?id=${bureauEditingId}` : '/api/bureau', {
+    method: bureauEditingId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload)
+  });
+  if (!res.ok) { showToast('خطأ أثناء الحفظ'); return; }
   showToast(bureauEditingId ? '✓ تم تحديث العضو' : '✓ تمت الإضافة');
   showDashboard('bureau');
 }
 
 async function deleteBureauMember(id) {
   if (!confirm('هل أنت متأكد من حذف هذا العضو؟')) return;
-  await sb.from('bureau_members').delete().eq('id', id);
+  await fetch(`/api/bureau?id=${id}`, { method: 'DELETE', headers: getAuthHeaders() });
   showToast('✓ تم الحذف');
   loadBureau();
 }
@@ -829,8 +758,9 @@ let activityEditingId = null;
 
 async function loadActivities() {
   const list = document.getElementById('activities-list');
-  const { data, error } = await sb.from('activities').select('*').order('created_at', { ascending: false });
-  if (error || !data?.length) {
+  const res = await fetch('/api/activities');
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) {
     list.innerHTML = '<div class="empty-state">لا توجد أنشطة بعد. أضف أول نشاط!</div>';
     return;
   }
@@ -852,13 +782,13 @@ function showActivityForm(activity = null) {
   document.getElementById('dashboard-screen').style.display = 'none';
   document.getElementById('activity-form-screen').style.display = 'block';
   document.getElementById('activity-form-title').textContent = activity ? 'تعديل النشاط' : 'إضافة نشاط جديد';
-  document.getElementById('act-title-ar').value     = activity?.title_ar     || '';
-  document.getElementById('act-title-fr').value     = activity?.title_fr     || '';
-  document.getElementById('act-period-ar').value    = activity?.period_ar    || '';
-  document.getElementById('act-period-fr').value    = activity?.period_fr    || '';
-  document.getElementById('act-desc-ar').value      = activity?.description_ar || '';
-  document.getElementById('act-desc-fr').value      = activity?.description_fr || '';
-  document.getElementById('act-emoji').value        = activity?.emoji        || '';
+  document.getElementById('act-title-ar').value      = activity?.title_ar      || '';
+  document.getElementById('act-title-fr').value      = activity?.title_fr      || '';
+  document.getElementById('act-period-ar').value     = activity?.period_ar     || '';
+  document.getElementById('act-period-fr').value     = activity?.period_fr     || '';
+  document.getElementById('act-desc-ar').value       = activity?.description_ar || '';
+  document.getElementById('act-desc-fr').value       = activity?.description_fr || '';
+  document.getElementById('act-emoji').value         = activity?.emoji         || '';
   document.getElementById('act-emoji-preview').textContent = activity?.emoji || '🎯';
   document.getElementById('act-gradient-from').value = activity?.gradient_from || '#2980b9';
   document.getElementById('act-gradient-to').value   = activity?.gradient_to   || '#1a6fa0';
@@ -874,27 +804,26 @@ async function saveActivity() {
   const titleAr = document.getElementById('act-title-ar').value.trim();
   if (!titleAr) { showToast('يرجى إدخال عنوان النشاط'); return; }
   const payload = {
-    title_ar:       titleAr,
-    title_fr:       document.getElementById('act-title-fr').value.trim()  || titleAr,
-    period_ar:      document.getElementById('act-period-ar').value.trim(),
-    period_fr:      document.getElementById('act-period-fr').value.trim(),
+    title_ar: titleAr, title_fr: document.getElementById('act-title-fr').value.trim() || titleAr,
+    period_ar: document.getElementById('act-period-ar').value.trim(),
+    period_fr: document.getElementById('act-period-fr').value.trim(),
     description_ar: document.getElementById('act-desc-ar').value.trim(),
     description_fr: document.getElementById('act-desc-fr').value.trim(),
-    emoji:          document.getElementById('act-emoji').value.trim()     || '🎯',
-    gradient_from:  document.getElementById('act-gradient-from').value,
-    gradient_to:    document.getElementById('act-gradient-to').value,
+    emoji: document.getElementById('act-emoji').value.trim() || '🎯',
+    gradient_from: document.getElementById('act-gradient-from').value,
+    gradient_to: document.getElementById('act-gradient-to').value,
   };
-  const { error } = activityEditingId
-    ? await sb.from('activities').update(payload).eq('id', activityEditingId)
-    : await sb.from('activities').insert(payload);
-  if (error) { showToast('خطأ: ' + error.message); return; }
+  const res = await fetch(activityEditingId ? `/api/activities?id=${activityEditingId}` : '/api/activities', {
+    method: activityEditingId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload)
+  });
+  if (!res.ok) { showToast('خطأ أثناء الحفظ'); return; }
   showToast(activityEditingId ? '✓ تم التحديث' : '✓ تمت إضافة النشاط');
   showDashboard('activities');
 }
 
 async function deleteActivity(id) {
   if (!confirm('هل أنت متأكد من حذف هذا النشاط؟')) return;
-  await sb.from('activities').delete().eq('id', id);
+  await fetch(`/api/activities?id=${id}`, { method: 'DELETE', headers: getAuthHeaders() });
   showToast('✓ تم الحذف');
   loadActivities();
 }
@@ -904,8 +833,9 @@ let galleryEditingId = null;
 
 async function loadGallery() {
   const list = document.getElementById('gallery-list');
-  const { data, error } = await sb.from('gallery_items').select('*').order('created_at', { ascending: false });
-  if (error || !data?.length) {
+  const res = await fetch('/api/gallery');
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) {
     list.innerHTML = '<div class="empty-state">لا توجد صور بعد. أضف أول صورة!</div>';
     return;
   }
@@ -915,12 +845,11 @@ async function loadGallery() {
         <div style="width:60px;height:40px;border-radius:6px;overflow:hidden;flex-shrink:0">
           ${g.image_url
             ? `<img src="${g.image_url}" style="width:100%;height:100%;object-fit:cover;" />`
-            : `<div style="width:100%;height:100%;background:linear-gradient(135deg,${g.gradient_from||'#2980b9'},${g.gradient_to||'#1a6fa0'});display:flex;align-items:center;justify-content:center;">${g.emoji||'📸'}</div>`
-          }
+            : `<div style="width:100%;height:100%;background:linear-gradient(135deg,${g.gradient_from||'#2980b9'},${g.gradient_to||'#1a6fa0'});display:flex;align-items:center;justify-content:center;">${g.emoji||'📸'}</div>`}
         </div>
         <div>
           <h3>${g.label_ar || '—'}${g.is_featured ? ' ⭐' : ''}</h3>
-          <span>${g.image_url ? 'صورة مرفوعة' : 'لون + أيقونة'}</span>
+          <span>${g.image_url ? 'رابط صورة' : 'لون + أيقونة'}</span>
         </div>
       </div>
       <div class="post-item-actions">
@@ -935,25 +864,14 @@ function showGalleryForm(item = null) {
   document.getElementById('dashboard-screen').style.display = 'none';
   document.getElementById('gallery-form-screen').style.display = 'block';
   document.getElementById('gallery-form-title').textContent = item ? 'تعديل الصورة' : 'إضافة صورة جديدة';
-  document.getElementById('gal-label-ar').value     = item?.label_ar    || '';
-  document.getElementById('gal-label-fr').value     = item?.label_fr    || '';
-  document.getElementById('gal-emoji').value        = item?.emoji       || '';
+  document.getElementById('gal-label-ar').value      = item?.label_ar     || '';
+  document.getElementById('gal-label-fr').value      = item?.label_fr     || '';
+  document.getElementById('gal-emoji').value         = item?.emoji        || '';
   document.getElementById('gal-emoji-preview').textContent = item?.emoji || '📸';
-  document.getElementById('gal-featured').checked   = item?.is_featured || false;
+  document.getElementById('gal-featured').checked    = item?.is_featured  || false;
   document.getElementById('gal-gradient-from').value = item?.gradient_from || '#2980b9';
   document.getElementById('gal-gradient-to').value   = item?.gradient_to   || '#1a6fa0';
-  document.getElementById('gal-image-url').value    = item?.image_url   || '';
-  document.getElementById('gal-image-file').value   = '';
-  const preview = document.getElementById('gal-image-preview');
-  const placeholder = document.getElementById('gal-upload-placeholder');
-  const zone = document.getElementById('gal-upload-zone');
-  if (item?.image_url) {
-    preview.src = item.image_url; preview.style.display = 'block';
-    placeholder.style.display = 'none'; zone.classList.add('has-image');
-  } else {
-    preview.src = ''; preview.style.display = 'none';
-    placeholder.style.display = 'block'; zone.classList.remove('has-image');
-  }
+  document.getElementById('gal-image-url').value     = item?.image_url    || '';
   updateGalGradient();
 }
 function updateGalGradient() {
@@ -961,45 +879,28 @@ function updateGalGradient() {
   const t = document.getElementById('gal-gradient-to').value;
   document.getElementById('gal-gradient-preview').style.background = `linear-gradient(135deg,${f},${t})`;
 }
-function previewGalleryImage(event) {
-  const file = event.target.files[0]; if (!file) return;
-  const preview = document.getElementById('gal-image-preview');
-  preview.src = URL.createObjectURL(file); preview.style.display = 'block';
-  document.getElementById('gal-upload-placeholder').style.display = 'none';
-  document.getElementById('gal-upload-zone').classList.add('has-image');
-}
 
 async function saveGallery() {
-  let imageUrl = document.getElementById('gal-image-url').value.trim() || null;
-  const fileInput = document.getElementById('gal-image-file');
-  if (fileInput.files[0]) {
-    const ext = fileInput.files[0].name.split('.').pop();
-    const path = `gallery/${Date.now()}.${ext}`;
-    const { error: upErr } = await sb.storage.from('images').upload(path, fileInput.files[0], { upsert: true });
-    if (upErr) { showToast('فشل رفع الصورة: ' + upErr.message); return; }
-    const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
-    imageUrl = publicUrl;
-  }
   const payload = {
-    label_ar:      document.getElementById('gal-label-ar').value.trim(),
-    label_fr:      document.getElementById('gal-label-fr').value.trim(),
-    emoji:         document.getElementById('gal-emoji').value.trim()    || '📸',
-    is_featured:   document.getElementById('gal-featured').checked,
+    label_ar: document.getElementById('gal-label-ar').value.trim(),
+    label_fr: document.getElementById('gal-label-fr').value.trim(),
+    emoji: document.getElementById('gal-emoji').value.trim() || '📸',
+    is_featured: document.getElementById('gal-featured').checked,
     gradient_from: document.getElementById('gal-gradient-from').value,
-    gradient_to:   document.getElementById('gal-gradient-to').value,
-    image_url:     imageUrl,
+    gradient_to: document.getElementById('gal-gradient-to').value,
+    image_url: document.getElementById('gal-image-url').value.trim() || null,
   };
-  const { error } = galleryEditingId
-    ? await sb.from('gallery_items').update(payload).eq('id', galleryEditingId)
-    : await sb.from('gallery_items').insert(payload);
-  if (error) { showToast('خطأ: ' + error.message); return; }
+  const res = await fetch(galleryEditingId ? `/api/gallery?id=${galleryEditingId}` : '/api/gallery', {
+    method: galleryEditingId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload)
+  });
+  if (!res.ok) { showToast('خطأ أثناء الحفظ'); return; }
   showToast(galleryEditingId ? '✓ تم التحديث' : '✓ تمت إضافة الصورة');
   showDashboard('gallery');
 }
 
 async function deleteGalleryItem(id) {
   if (!confirm('هل أنت متأكد من الحذف؟')) return;
-  await sb.from('gallery_items').delete().eq('id', id);
+  await fetch(`/api/gallery?id=${id}`, { method: 'DELETE', headers: getAuthHeaders() });
   showToast('✓ تم الحذف');
   loadGallery();
 }
@@ -1009,8 +910,9 @@ let partnerEditingId = null;
 
 async function loadPartners() {
   const list = document.getElementById('partners-list');
-  const { data, error } = await sb.from('partners').select('*').order('created_at');
-  if (error || !data?.length) {
+  const res = await fetch('/api/partners');
+  const data = await res.json();
+  if (!Array.isArray(data) || !data.length) {
     list.innerHTML = '<div class="empty-state">لا يوجد شركاء بعد. أضف أول شريك!</div>';
     return;
   }
@@ -1022,10 +924,7 @@ async function loadPartners() {
             ? `<img src="${p.logo_url}" style="max-width:100%;max-height:100%;object-fit:contain;" />`
             : `<span style="font-size:1.4rem;">${p.emoji || '🤝'}</span>`}
         </div>
-        <div>
-          <h3>${p.name_ar || '—'}</h3>
-          <span>${p.name_fr || ''}</span>
-        </div>
+        <div><h3>${p.name_ar || '—'}</h3><span>${p.name_fr || ''}</span></div>
       </div>
       <div class="post-item-actions">
         <button class="btn btn-blue btn-sm" onclick='showPartnerForm(${JSON.stringify(p).replace(/'/g,"&#39;")})'>تعديل</button>
@@ -1045,66 +944,31 @@ function showPartnerForm(partner = null) {
   document.getElementById('part-emoji').value    = partner?.emoji    || '';
   document.getElementById('part-emoji-preview').textContent = partner?.emoji || '🤝';
   document.getElementById('part-website').value  = partner?.website_url || '';
-  document.getElementById('part-logo-file').value = '';
-  const preview = document.getElementById('part-logo-preview');
-  const placeholder = document.getElementById('part-upload-placeholder');
-  const zone = document.getElementById('part-upload-zone');
-  if (partner?.logo_url) {
-    preview.src = partner.logo_url; preview.style.display = 'block';
-    placeholder.style.display = 'none'; zone.classList.add('has-image');
-  } else {
-    preview.src = ''; preview.style.display = 'none';
-    placeholder.style.display = 'block'; zone.classList.remove('has-image');
-  }
-}
-
-function previewPartnerLogo(event) {
-  const file = event.target.files[0]; if (!file) return;
-  const preview = document.getElementById('part-logo-preview');
-  preview.src = URL.createObjectURL(file); preview.style.display = 'block';
-  document.getElementById('part-upload-placeholder').style.display = 'none';
-  document.getElementById('part-upload-zone').classList.add('has-image');
 }
 
 async function savePartner() {
   const nameAr = document.getElementById('part-name-ar').value.trim();
   if (!nameAr) { showToast('يرجى إدخال اسم الشريك'); return; }
-  let logoUrl = document.getElementById('part-logo-url').value.trim() || null;
-  const fileInput = document.getElementById('part-logo-file');
-  if (fileInput.files[0]) {
-    const ext = fileInput.files[0].name.split('.').pop();
-    const path = `partners/${Date.now()}.${ext}`;
-    const { error: upErr } = await sb.storage.from('images').upload(path, fileInput.files[0], { upsert: true });
-    if (upErr) { showToast('فشل رفع الشعار: ' + upErr.message); return; }
-    const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(path);
-    logoUrl = publicUrl;
-  }
   const payload = {
-    name_ar:     nameAr,
-    name_fr:     document.getElementById('part-name-fr').value.trim() || nameAr,
-    logo_url:    logoUrl,
-    emoji:       document.getElementById('part-emoji').value.trim() || '🤝',
+    name_ar: nameAr, name_fr: document.getElementById('part-name-fr').value.trim() || nameAr,
+    logo_url: document.getElementById('part-logo-url').value.trim() || null,
+    emoji: document.getElementById('part-emoji').value.trim() || '🤝',
     website_url: document.getElementById('part-website').value.trim() || null,
   };
-  const { error } = partnerEditingId
-    ? await sb.from('partners').update(payload).eq('id', partnerEditingId)
-    : await sb.from('partners').insert(payload);
-  if (error) { showToast('خطأ: ' + error.message); return; }
+  const res = await fetch(partnerEditingId ? `/api/partners?id=${partnerEditingId}` : '/api/partners', {
+    method: partnerEditingId ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload)
+  });
+  if (!res.ok) { showToast('خطأ أثناء الحفظ'); return; }
   showToast(partnerEditingId ? '✓ تم التحديث' : '✓ تمت إضافة الشريك');
   showDashboard('partners');
 }
 
 async function deletePartner(id) {
   if (!confirm('هل أنت متأكد من حذف هذا الشريك؟')) return;
-  await sb.from('partners').delete().eq('id', id);
+  await fetch(`/api/partners?id=${id}`, { method: 'DELETE', headers: getAuthHeaders() });
   showToast('✓ تم الحذف');
   loadPartners();
 }
-
-/* ── INIT ── */
-sb.auth.onAuthStateChange((event, session) => {
-  if (session) enterApp();
-});
 </script>
 </body>
 </html>
