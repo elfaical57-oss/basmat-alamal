@@ -1040,9 +1040,7 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* ── LOAD POSTS FROM SUPABASE ── */
-const SB_URL = 'https://yyjbcduakapgblcgqieq.supabase.co';
-const SB_KEY = 'sb_publishable_SQxTQ9a2HcskaUmAgFOVrw_qAvbIZlx';
+/* ── LOAD POSTS ── */
 let allPosts = [];
 const POSTS_PER_PAGE = 3;
 let currentPage = 1;
@@ -1076,9 +1074,7 @@ function renderPosts(posts) {
 async function loadPosts() {
   const container = document.getElementById('posts-container');
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/posts?select=*&order=created_at.desc`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
+    const res = await fetch('/api/posts');
     allPosts = await res.json();
     if (!Array.isArray(allPosts) || !allPosts.length) {
       container.innerHTML = '<p class="no-posts" style="grid-column:1/-1;">لا توجد أخبار بعد.</p>';
@@ -1133,15 +1129,12 @@ function closeModal(e) {
   }
 }
 
-/* ── LOAD ABOUT FROM SUPABASE ── */
+/* ── LOAD ABOUT ── */
 async function loadAbout() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/about?id=eq.1&select=*`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
-    const arr = await res.json();
-    if (!Array.isArray(arr) || !arr.length) return;
-    const d = arr[0];
+    const res = await fetch('/api/about');
+    const d = await res.json();
+    if (!d || !d.id) return;
 
     function setEl(el, ar, fr) {
       if (!el) return;
@@ -1167,9 +1160,7 @@ loadAbout();
 /* ── DYNAMIC BUREAU ── */
 async function loadBureauSection() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/bureau_members?select=*&order=sort_order.asc,created_at.asc`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
+    const res = await fetch('/api/bureau');
     const data = await res.json();
     if (!Array.isArray(data) || !data.length) return;
     const grid = document.getElementById('board-grid');
@@ -1190,9 +1181,7 @@ async function loadBureauSection() {
 /* ── DYNAMIC ACTIVITIES ── */
 async function loadActivitiesSection() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/activities?select=*&order=created_at.asc`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
+    const res = await fetch('/api/activities');
     const data = await res.json();
     if (!Array.isArray(data) || !data.length) return;
     const container = document.getElementById('activities-container');
@@ -1215,9 +1204,7 @@ async function loadActivitiesSection() {
 /* ── DYNAMIC GALLERY ── */
 async function loadGallerySection() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/gallery_items?select=*&order=is_featured.desc,created_at.asc`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
+    const res = await fetch('/api/gallery');
     const data = await res.json();
     if (!Array.isArray(data) || !data.length) return;
     const grid = document.getElementById('gallery-grid');
@@ -1243,9 +1230,7 @@ loadGallerySection();
 /* ── DYNAMIC PARTNERS ── */
 async function loadPartnersSection() {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/partners?select=*&order=created_at.asc`, {
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
+    const res = await fetch('/api/partners');
     const data = await res.json();
     if (!Array.isArray(data) || !data.length) return;
     const flex = document.getElementById('partners-flex');
